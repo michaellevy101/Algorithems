@@ -39,7 +39,7 @@ public class KMPSearch {
         return buildTable(pattern.toCharArray());
     }
 
-    private static final int[] buildTable(char[] pattern){
+    public static final int[] buildTable(char[] pattern){
         int[] commonPrefixSuffixTable = new int[pattern.length];
 
         if (pattern.length == 0)
@@ -69,10 +69,14 @@ public class KMPSearch {
                 For example: if the pattern is "AACAAA" and for index 5 the commonPrefixSuffixLength is 2 "AA",
                 We can't increment the commonPrefixSuffixLength to 3 because pattern[5] ('A) != pattern[2] ('C')
                 so try to create new common prefix suffix with length of 2 ("AA").
-                Let's represent the pattern "AACAAA" as ABCDEF and given that: A == D && B == E && C != F.
-                In order to shift our common prefix suffix with size 2 (as before) the following conditions must be obtained:
-                1.  A == E -> but since E == B (given) we can check if A == B.
-                2.  B == F -> but since E == B (given) so if A == B (Condition 1) and F == A -> A == B == E == F.
+
+                In order to find out a shorter suffix of the pattern let's look into the facts:
+                The pattern "AACAA" has a common prefix suffix of length 2 (indexes: [0-1],[3-4]).
+                We can't add the last A to the common prefix suffix because pattern[5] ('A) != pattern[2] ('C').
+                So maybe there is a shorter common prefix suffix that ends at index 4 (Add the new char at index 5 later).
+
+                This shorter suffix must be the suffix of the previous suffix (suffix of index [3-4]) and because [0-1] == [3-4]
+                we can check that in the location 1 that we already calculated.
                 */
                 commonPrefixSuffixLength = commonPrefixSuffixTable[commonPrefixSuffixLength - 1];
 
