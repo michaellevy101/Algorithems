@@ -89,6 +89,13 @@ class KMPSearchTest {
     }
 
     @Test
+    public void gcatcgcagagagtatacagtgcacgaaaaaaaaaCheck(){
+        List<Integer> result = KMPSearch.search("gcatcgcagagagtatacagtgcacgaaaaaaaaa", "gcagagag");
+        assertEquals(1, result.size());
+        assertEquals(5, result.get(0));
+    }
+
+    @Test
     public void abcabcdCheck(){
         List<Integer> result = KMPSearch.search("abcabcabcabcd", "abcabcd");
         assertEquals(1, result.size());

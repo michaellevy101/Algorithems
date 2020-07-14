@@ -84,6 +84,13 @@ class MPSearchTest {
     }
 
     @Test
+    public void gcatcgcagagagtatacagtgcacgaaaaaaaaaCheck(){
+        List<Integer> result = MPSearch.search("gcatcgcagagagtatacagtgcacgaaaaaaaaa", "gcagagag");
+        assertEquals(1, result.size());
+        assertEquals(5, result.get(0));
+    }
+
+    @Test
     public void tableTest1(){
         assertArrayEquals(new int[]{0, 0, 0, 1, 0, 1, 0, 1}, MPSearch.buildTable("gcagagag"));
     }
