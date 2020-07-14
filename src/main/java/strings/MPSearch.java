@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class KMPSearch {
+public class MPSearch {
 
     public static final List<Integer> search(String str, String word){
         if (str.length() == 0 || word.length() == 0)

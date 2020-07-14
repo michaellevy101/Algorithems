@@ -47,7 +47,7 @@ public class KMP2 {
             return new int[0];
 
         int[] kmpTable = new int[pattern.length + 1];
-        int[] mpFunction = KMPSearch.buildTable(pattern);
+        int[] mpFunction = MPSearch.buildTable(pattern);
 
         kmpTable[0] = -1;
         kmpTable[pattern.length] = mpFunction[pattern.length - 1];
