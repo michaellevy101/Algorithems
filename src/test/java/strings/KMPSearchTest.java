@@ -6,7 +6,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class KMP2Test {
+class KMPSearchTest {
 
     @Test
     public void compare(){
