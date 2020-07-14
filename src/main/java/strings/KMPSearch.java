@@ -1,11 +1,16 @@
 package strings;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 public class KMPSearch {
+
+    private static final Logger LOG = LogManager.getLogger(KMPSearch.class);
 
     public static List<Integer> search(String str, String word) {
         if (str.length() == 0 || word.length() == 0)
@@ -21,28 +26,34 @@ public class KMPSearch {
         int j = 0;
 
         while (i <= text.length - pattern.length)  {
-            while (j < pattern.length && text[i + j] == pattern[j])
+            while (j < pattern.length && text[i + j] == pattern[j]) {
+                LOG.debug("pattern[" + j + "] = " + pattern[j] + " == text[" +(i + j) + "] = " + text[i + j]);
                 j++;
+            }
 
             if (j == pattern.length) {
+                LOG.debug("Pattern found at index = " + i);
                 results.add(i);
                 i = i + j - table[j];
-                j = table[j] + 1;
+                j = table[j];
+                LOG.debug("Switching window: text index = " + i + ", pattern index " + j);
                 continue;
             }
 
+            LOG.debug("Mismatch occurred: pattern[" + j + "] = " + pattern[j] + " != text[" +(i + j) + "] = " + text[i + j]);
             i = i + j - table[j];
             j = Math.max(0, table[j]);
+            LOG.debug("Switching window: text index = " + i + ", pattern index " + j);
         }
 
         return results;
     }
 
-    public static final int[] buildTable(String pattern){
+    protected static final int[] buildTable(String pattern){
         return buildTable(pattern.toCharArray());
     }
 
-    public static final int[] buildTable(char[] pattern){
+    protected static final int[] buildTable(char[] pattern){
         if (pattern.length == 0)
             return new int[0];
 

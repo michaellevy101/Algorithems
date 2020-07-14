@@ -1,11 +1,16 @@
 package strings;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 public class MPSearch {
+
+    private static final Logger LOG = LogManager.getLogger(MPSearch.class);
 
     public static final List<Integer> search(String str, String word){
         if (str.length() == 0 || word.length() == 0)
@@ -19,16 +24,25 @@ public class MPSearch {
 
         int matchingCharactersLength = 0;
 
-        for (int textIndex = 0; textIndex < text.length; ++textIndex) {
-            while (matchingCharactersLength > 0 && pattern[matchingCharactersLength] != text[textIndex])
-                matchingCharactersLength = table[matchingCharactersLength -1];
+        for (int textIndex = 0; textIndex < text.length && pattern.length - matchingCharactersLength <= text.length - textIndex; ++textIndex) {
+            while (matchingCharactersLength > 0 && pattern[matchingCharactersLength] != text[textIndex]) {
+                LOG.debug("Mismatch occurred: pattern[" + matchingCharactersLength + "] = " + pattern[matchingCharactersLength] + " != text[" + textIndex + "] = " + text[textIndex]);
+                matchingCharactersLength = table[matchingCharactersLength - 1];
+                LOG.debug("Pattern index = " + matchingCharactersLength);
+            }
 
-            if (pattern[matchingCharactersLength] == text[textIndex])
+            if (pattern[matchingCharactersLength] != text[textIndex]) {
+                LOG.debug("Mismatch occurred: pattern[" + matchingCharactersLength + "] = " + pattern[matchingCharactersLength] + " != text[" + textIndex + "] = " + text[textIndex]);
+            } else {
+                LOG.debug("pattern[" + matchingCharactersLength + "] = " + pattern[matchingCharactersLength] + " == text[" + textIndex + "] = " + text[textIndex]);
                 matchingCharactersLength++;
+            }
 
             if (matchingCharactersLength == pattern.length) {
+                LOG.debug("Pattern found at index = " + (textIndex - pattern.length + 1));
                 results.add(textIndex - pattern.length + 1);
                 matchingCharactersLength = table[matchingCharactersLength - 1];
+                LOG.debug("Pattern index = " + matchingCharactersLength);
             }
         }
 
