@@ -24,68 +24,77 @@ class MPSearchTest {
 
     @Test
     public void testEmpty(){
-        assertTrue(MPSearch.search("",  "").isEmpty());
+        assertTrue(invoke("", "").isEmpty());
     }
 
     @Test
     public void testEmptyText(){
-        assertTrue(MPSearch.search("abc",  "").isEmpty());
+        assertTrue(invoke("abc",  "").isEmpty());
     }
 
     @Test
     public void testEmptyPattern(){
-        assertTrue(MPSearch.search("",  "abc").isEmpty());
+        assertTrue(invoke("",  "abc").isEmpty());
     }
 
     @Test
     public void singleEqualsCharacter(){
-        assertTrue(!MPSearch.search("a",  "a").isEmpty());
+        assertTrue(!invoke("a",  "a").isEmpty());
     }
 
     @Test
     public void singleNotEqualCharacter(){
-        assertTrue(MPSearch.search("a",  "b").isEmpty());
+        assertTrue(invoke("a",  "b").isEmpty());
     }
 
     @Test
     public void twoMatches(){
-        List<Integer> result = MPSearch.search("aa", "a");
+        List<Integer> result = invoke("aa", "a");
         assertTrue(result.size() == 2);
         assertEquals(0, result.get(0));
         assertEquals(1, result.get(1));
     }
 
     @Test
+    public void threeMatchesTwoCharsPattern(){
+        List<Integer> result = invoke("aaaa", "aa");
+        assertEquals(3, result.size());
+        assertEquals(0, result.get(0));
+        assertEquals(1, result.get(1));
+        assertEquals(2, result.get(2));
+    }
+
+    @Test
     public void cocacola(){
-        List<Integer> result = MPSearch.search("COCOCACOLA", "COCACOLA");
+        List<Integer> result = invoke("COCOCACOLA", "COCACOLA");
         assertEquals(1, result.size());
         assertEquals(2, result.get(0));
     }
 
     @Test
     public void ananasCheck(){
-        List<Integer> result = MPSearch.search("ANANAANANAS", "ANANAS");
+        List<Integer> result = invoke("ANANAANANAS", "ANANAS");
         assertEquals(1, result.size());
         assertEquals(5, result.get(0));
     }
 
     @Test
     public void abcabcdCheck(){
-        List<Integer> result = MPSearch.search("abcabcabcabcd", "abcabcd");
+        List<Integer> result = invoke("abcabcabcabcd", "abcabcd");
         assertEquals(1, result.size());
         assertEquals(6, result.get(0));
     }
 
     @Test
     public void gcatcgcagagagtatacagtacgCheck(){
-        List<Integer> result = MPSearch.search("gcatcgcagagagtatacagtacg", "gcagagag");
+        List<Integer> result = invoke("gcatcgcagagagtatacagtacg", "gcagagag");
         assertEquals(1, result.size());
         assertEquals(5, result.get(0));
     }
 
     @Test
     public void gcatcgcagagagtatacagtgcacgaaaaaaaaaCheck(){
-        List<Integer> result = MPSearch.search("gcatcgcagagagtatacagtgcacgaaaaaaaaa", "gcagagag");
+        List<Integer> result = invoke("gcatcgcagagagtatacagtgcacgaaaaaaaaa", "gcagagag");
         assertEquals(1, result.size());
         assertEquals(5, result.get(0));
     }
@@ -93,5 +102,9 @@ class MPSearchTest {
     @Test
     public void tableTest1(){
         assertArrayEquals(new int[]{0, 0, 0, 1, 0, 1, 0, 1}, MPSearch.buildTable("gcagagag"));
+    }
+
+    protected List<Integer> invoke(String text, String pattern){
+        return MPSearch.search(text, pattern);
     }
 }

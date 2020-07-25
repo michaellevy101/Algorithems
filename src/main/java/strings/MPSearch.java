@@ -62,7 +62,7 @@ public class MPSearch {
         commonPrefixSuffixTable[0] = 0;
         int commonPrefixSuffixLength = 0;
 
-        for (int index = 2; index < pattern.length; ++index) {
+        for (int index = 1; index < pattern.length; ++index) {
             /*
             This loop trying to locate the maximum common prefix suffix for the pattern until the current index.
             The idea is that if the last prefix character equals to the last suffix character we should increment the common prefix suffix length.
