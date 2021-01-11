@@ -2,6 +2,7 @@ package strings;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,6 +21,9 @@ class KMPSearchTest extends MPSearchTest{
 
     @Override
     protected List<Integer> invoke(String text, String pattern) {
+        System.out.println("Pattern = " + pattern);
+        System.out.println("MPTable = " + Arrays.toString(MPSearch.buildTable(pattern)));
+        System.out.println("KMPTable = " + Arrays.toString(KMPSearch.buildTable(pattern)));
         return KMPSearch.search(text, pattern);
     }
 }

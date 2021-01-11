@@ -65,6 +65,13 @@ class MPSearchTest {
     }
 
     @Test
+    public void notRepeatedPattern(){
+        List<Integer> result = invoke("abcabcdabcabcabc", "abcabcabc");
+        assertEquals(1, result.size());
+        assertEquals(7, result.get(0));
+    }
+
+    @Test
     public void cocacola(){
         List<Integer> result = invoke("COCOCACOLA", "COCACOLA");
         assertEquals(1, result.size());

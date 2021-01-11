@@ -66,10 +66,10 @@ public class KMPSearch {
         for (int j = 1; j < pattern.length; ++j) {
             int t = mpFunction[j - 1];
 
-            while (t != 0 && pattern[j] == pattern[t])
+            while (t > 0 && pattern[j] == pattern[t])
                 t = mpFunction[t - 1];
 
-            if (t != 0){
+            if (t > 0){
                 kmpTable[j] = t;
             } else if (pattern[j] == pattern[0]){
                 kmpTable[j] = -1;
