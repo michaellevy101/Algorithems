@@ -11,7 +11,27 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MPSearchTest {
+/**
+ * Base test class for all string matching algorithms.
+ * This abstract class contains comprehensive test cases that can be reused
+ * by all string matching algorithm implementations.
+ * 
+ * To create tests for a new string matching algorithm:
+ * 1. Extend this class
+ * 2. Override the invoke() method to call your algorithm
+ * 3. Optionally add algorithm-specific tests (like table building tests)
+ * 
+ * Example:
+ * <pre>
+ * class MyAlgorithmTest extends StringMatchingAlgorithmTest {
+ *     &#64;Override
+ *     protected List&lt;Integer&gt; invoke(String text, String pattern) {
+ *         return MyAlgorithm.search(text, pattern);
+ *     }
+ * }
+ * </pre>
+ */
+abstract class StringMatchingAlgorithmTest {
 
     @BeforeAll
     public static final void prepare(){
@@ -106,12 +126,37 @@ class MPSearchTest {
         assertEquals(5, result.get(0));
     }
 
+    // Search test from original main method
     @Test
-    public void tableTest1(){
-        assertArrayEquals(new int[]{0, 0, 0, 1, 0, 1, 0, 1}, MPSearch.buildTable("gcagagag"));
+    public void searchTestABABABABABABC(){
+        List<Integer> result = invoke("ABABABABABABC", "ABABABC");
+        assertEquals(1, result.size());
+        assertEquals(6, result.get(0));
     }
 
-    protected List<Integer> invoke(String text, String pattern){
-        return MPSearch.search(text, pattern);
+    @Test
+    public void testNullText(){
+        assertThrows(IllegalArgumentException.class, 
+            () -> invoke(null, "pattern"));
     }
+
+    @Test
+    public void testNullPattern(){
+        assertThrows(IllegalArgumentException.class, 
+            () -> invoke("text", null));
+    }
+
+    @Test
+    public void testBothNull(){
+        assertThrows(IllegalArgumentException.class, 
+            () -> invoke(null, null));
+    }
+
+    /**
+     * Override this method in subclasses to test different algorithms.
+     * @param text the text to search in
+     * @param pattern the pattern to search for
+     * @return list of positions where pattern is found
+     */
+    protected abstract List<Integer> invoke(String text, String pattern);
 }
