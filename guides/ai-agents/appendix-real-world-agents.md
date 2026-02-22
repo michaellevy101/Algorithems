@@ -1,4 +1,4 @@
-# Appendix — Real-World AI Coding Agents: Cline & Roo Code
+# Appendix — Real-World AI Coding Agents: Cline, Roo Code & GitHub Copilot CLI
 
 > **🎯 Goal**: Understand how production AI agents implement the patterns you've learned throughout this syllabus.
 
@@ -13,10 +13,11 @@
 1. [Why Study Real-World Agents?](#why-study-real-world-agents)
 2. [Cline — Deep Dive](#cline--deep-dive)
 3. [Roo Code — Deep Dive](#roo-code--deep-dive)
-4. [Head-to-Head Comparison](#head-to-head-comparison)
-5. [Key Patterns to Learn From](#key-patterns-to-learn-from)
-6. [Connection to Syllabus Concepts](#connection-to-syllabus-concepts)
-7. [Further Reading](#further-reading)
+4. [GitHub Copilot CLI — Deep Dive](#github-copilot-cli--deep-dive)
+5. [Head-to-Head Comparison](#head-to-head-comparison)
+6. [Key Patterns to Learn From](#key-patterns-to-learn-from)
+7. [Connection to Syllabus Concepts](#connection-to-syllabus-concepts)
+8. [Further Reading](#further-reading)
 
 ---
 
@@ -24,7 +25,7 @@
 
 Throughout this syllabus, you learned to build agents from scratch — ReAct loops, planners, RAG pipelines, multi-agent systems. But how do **production agents** apply these same patterns at scale?
 
-Cline and Roo Code are two of the most popular open-source AI coding agents. They run inside VS Code, read and edit your code, execute terminal commands, and automate browser tasks — all powered by LLMs. Studying them reveals:
+Cline and Roo Code are two of the most popular open-source AI coding agents. GitHub Copilot CLI is GitHub's terminal-native agent. They all read and edit your code, execute commands, and automate tasks — all powered by LLMs. Studying them reveals:
 
 - How theoretical patterns (ReAct, planning, memory) translate to real products
 - Engineering trade-offs in context management, tool design, and safety
@@ -41,8 +42,9 @@ Cline and Roo Code are two of the most popular open-source AI coding agents. The
 │  Tools (Day 3)            →    MCP protocol & tool ecosystem    │
 │  Planner/Executor (Day 4) →    Roo Code's Architect + Code      │
 │  RAG + Memory (Day 5)     →    Memory Bank & context windows    │
-│  Multi-Agent (Day 6)      →    Roo Code Cloud agent teams       │
+│  Multi-Agent (Day 6)      →    Copilot CLI sub-agents & fleet   │
 │  Full System (Day 7)      →    Production-grade architecture    │
+│  Extensibility            →    Skills, plugins, custom agents   │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -512,72 +514,424 @@ Roo Code Cloud extends the local extension into a **multi-agent collaboration pl
 
 ---
 
+## GitHub Copilot CLI — Deep Dive
+
+### What Is GitHub Copilot CLI?
+
+GitHub Copilot CLI is a **terminal-native AI coding agent** — unlike Cline and Roo Code which live inside VS Code, Copilot CLI runs directly in your terminal. It's powered by the same agentic harness as GitHub's cloud-based Copilot coding agent, with deep GitHub ecosystem integration out of the box.
+
+Key philosophy: **layered extensibility** — Skills, Custom Agents, MCP servers, and Plugins form a 4-layer system where each layer adds capabilities without requiring changes to the core agent.
+
+### Architecture
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                 COPILOT CLI ARCHITECTURE                          │
+│                                                                   │
+│  ┌────────────────────────────────────────────────────────────┐  │
+│  │                   INPUT ROUTER                              │  │
+│  │  Classifies input by prefix:                                │  │
+│  │  / → slash command   ! → shell   @ → file   & → delegate   │  │
+│  └──────────────────────────┬─────────────────────────────────┘  │
+│                              │                                    │
+│  ┌───────────────────────────▼────────────────────────────────┐  │
+│  │                   AGENTIC HARNESS                           │  │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌───────────┐ │  │
+│  │  │  Main    │  │ Sub-     │  │ Sub-     │  │ Sub-      │ │  │
+│  │  │  Agent   │──│ Agent:   │  │ Agent:   │  │ Agent:    │ │  │
+│  │  │          │  │ Explore  │  │ Task     │  │ Review    │ │  │
+│  │  └──────────┘  └──────────┘  └──────────┘  └───────────┘ │  │
+│  │           Each sub-agent has its own context window         │  │
+│  └────────────────────────────────────────────────────────────┘  │
+│                              │                                    │
+│  ┌───────────────────────────▼────────────────────────────────┐  │
+│  │              4-LAYER EXTENSIBILITY                          │  │
+│  │                                                             │  │
+│  │  Layer 1: Skills      (SKILL.md — procedural knowledge)    │  │
+│  │  Layer 2: Agents      (.agent.md — specialized personas)   │  │
+│  │  Layer 3: MCP Servers (JSON-RPC — external tools)          │  │
+│  │  Layer 4: Plugins     (slash commands — bundled features)   │  │
+│  └────────────────────────────────────────────────────────────┘  │
+│                              │                                    │
+│          ┌───────────────────┼───────────────────┐               │
+│          │                   │                   │                │
+│   ┌──────▼──────┐    ┌──────▼──────┐    ┌──────▼──────┐        │
+│   │ File System │    │  Terminal   │    │  GitHub     │        │
+│   │ (read/edit) │    │  (execute)  │    │  API (MCP)  │        │
+│   └─────────────┘    └─────────────┘    └─────────────┘        │
+│                                                                   │
+│  State: ~/.copilot/session-state/ (timeline, config, sessions)   │
+│                                                                   │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+**Key components:**
+
+| Component | Purpose |
+|-----------|---------|
+| Input Router | Classifies prompts by prefix (`/`, `!`, `@`, `&`) and routes to handlers |
+| Agentic Harness | Core agent loop with model interaction, streaming, and tool execution |
+| Sub-agents | Isolated context windows for explore, task, review, and general-purpose work |
+| Session State | Persistent timeline of all actions, context, and decisions |
+| GitHub MCP | Built-in MCP server for GitHub API (issues, PRs, repos, actions) |
+
+### The Skills System
+
+Skills are Copilot CLI's most distinctive feature — **portable, progressively-loaded packages of procedural knowledge**. Unlike MCP tools (which provide _actions_), Skills provide _instructions_ — they teach the agent _how_ to approach a domain.
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│                  SKILLS SYSTEM                                  │
+│                                                                 │
+│  Skill = Folder with SKILL.md + optional scripts/resources      │
+│                                                                 │
+│  .github/skills/                                                │
+│  ├── webapp-testing/                                            │
+│  │   ├── SKILL.md          ← YAML frontmatter + instructions   │
+│  │   ├── test-template.py  ← supporting script                 │
+│  │   └── patterns.md       ← reference material                │
+│  ├── security-review/                                           │
+│  │   └── SKILL.md                                               │
+│  └── api-design/                                                │
+│      └── SKILL.md                                               │
+│                                                                 │
+│  Progressive Loading (3 stages):                                │
+│  ┌──────────┐    ┌──────────────┐    ┌──────────────────┐      │
+│  │ Stage 1  │───►│   Stage 2    │───►│    Stage 3       │      │
+│  │ Metadata │    │ Instructions │    │ Scripts/Resources │      │
+│  │ (always) │    │ (on match)   │    │ (on demand)      │      │
+│  └──────────┘    └──────────────┘    └──────────────────┘      │
+│                                                                 │
+│  Why progressive? Saves context tokens — only loads what's      │
+│  needed, when it's needed. Cline/Roo load all-or-nothing.       │
+│                                                                 │
+└────────────────────────────────────────────────────────────────┘
+```
+
+**SKILL.md example:**
+
+```markdown
+---
+name: webapp-testing
+description: Assists with web application test strategies and automated test creation.
+---
+
+## When to Use This Skill
+Use this skill when the user asks about testing web applications,
+writing test suites, or debugging test failures.
+
+## Testing Strategy
+1. Always start with unit tests for pure functions
+2. Use integration tests for API endpoints
+3. Use E2E tests sparingly — only for critical user flows
+
+## Conventions
+- Use pytest with fixtures for Python projects
+- Use Jest + Testing Library for React projects
+- Name test files with `.test.` or `.spec.` suffix
+```
+
+**Key insight**: Skills follow the open `agentskills.io` standard, making them **portable across agents** — the same skill works in Copilot CLI, Claude Code, and OpenAI Codex.
+
+### Custom Agents (Sub-agents)
+
+Copilot CLI has a built-in **sub-agent architecture** — the main agent can delegate tasks to specialized sub-agents, each running in its own isolated context window:
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│              COPILOT CLI SUB-AGENT SYSTEM                       │
+│                                                                 │
+│  Built-in Agents:                                               │
+│  ┌──────────────┐  Fast codebase analysis, Q&A                 │
+│  │  🔍 Explore   │  Tools: grep, glob, view                     │
+│  │              │  Model: Fast (Haiku)                          │
+│  └──────────────┘                                               │
+│                                                                 │
+│  ┌──────────────┐  Run builds, tests, lints                    │
+│  │  ⚙️ Task      │  Tools: All CLI tools                        │
+│  │              │  Model: Fast (Haiku)                          │
+│  └──────────────┘                                               │
+│                                                                 │
+│  ┌──────────────┐  Complex multi-step work                     │
+│  │  🧠 General   │  Tools: All tools + high-quality reasoning   │
+│  │   Purpose    │  Model: Premium (Sonnet)                     │
+│  └──────────────┘                                               │
+│                                                                 │
+│  ┌──────────────┐  Analyze diffs for real issues               │
+│  │  📋 Code      │  Tools: All CLI tools (read-only)            │
+│  │   Review     │  Model: Premium (Sonnet)                     │
+│  └──────────────┘                                               │
+│                                                                 │
+│  Custom Agents (user-defined):                                  │
+│  ┌──────────────┐  Defined via .agent.md profiles              │
+│  │  🔧 Custom    │  Specify: expertise, tools, instructions     │
+│  │              │  Scopes: user, repo, org/enterprise          │
+│  └──────────────┘                                               │
+│                                                                 │
+│  Key difference from Roo Code modes:                            │
+│  • Sub-agents run in SEPARATE context windows (no pollution)    │
+│  • Main agent DELEGATES — it picks the right sub-agent          │
+│  • Multiple sub-agents can run in PARALLEL (/fleet mode)        │
+│                                                                 │
+└────────────────────────────────────────────────────────────────┘
+```
+
+**Custom agent profile example (`.github/agents/security-reviewer.agent.md`):**
+
+```markdown
+---
+name: security-reviewer
+description: Reviews code changes for security vulnerabilities
+tools:
+  - grep
+  - glob
+  - view
+  - powershell
+---
+
+You are a security expert. When reviewing code:
+1. Check for injection vulnerabilities (SQL, XSS, command injection)
+2. Verify authentication and authorization logic
+3. Look for hardcoded secrets or credentials
+4. Check for insecure cryptographic practices
+5. Flag any unsafe deserialization
+```
+
+### Fleet Mode (Parallel Sub-agents)
+
+Copilot CLI's `/fleet` mode enables **parallel sub-agent execution** — multiple sub-agents work simultaneously on different parts of a task:
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│                    FLEET MODE                                   │
+│                                                                 │
+│  Main Agent receives complex task                               │
+│       │                                                         │
+│       ├──► Sub-agent 1: "Explore auth module"     ──┐          │
+│       │                                              │          │
+│       ├──► Sub-agent 2: "Run test suite"          ──┤ Parallel │
+│       │                                              │          │
+│       └──► Sub-agent 3: "Review recent changes"   ──┘          │
+│                                                                 │
+│       All results consolidated back to main agent               │
+│       │                                                         │
+│       ▼                                                         │
+│  Main Agent synthesizes and continues                           │
+│                                                                 │
+│  vs. Roo Code: Modes are sequential (switch between them)       │
+│  vs. Cline:    Single agent only (no delegation)                │
+│                                                                 │
+└────────────────────────────────────────────────────────────────┘
+```
+
+### Delegation to Cloud Agent
+
+A unique capability: Copilot CLI can **delegate tasks to GitHub's cloud-based coding agent**, creating a seamless local→cloud workflow:
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│              LOCAL → CLOUD DELEGATION                           │
+│                                                                 │
+│  copilot CLI (local)                                            │
+│       │                                                         │
+│       │  /delegate "implement auth middleware"                  │
+│       │  or: & implement auth middleware                        │
+│       │                                                         │
+│       ▼                                                         │
+│  1. Commits unstaged changes as checkpoint                      │
+│  2. Creates new branch                                          │
+│  3. Hands off to Copilot coding agent (cloud)                  │
+│       │                                                         │
+│       ▼                                                         │
+│  Cloud agent works autonomously:                                │
+│  • Opens draft PR                                               │
+│  • Makes changes                                                │
+│  • Requests review when done                                    │
+│       │                                                         │
+│       ▼                                                         │
+│  /resume — bring cloud session back to local CLI                │
+│                                                                 │
+└────────────────────────────────────────────────────────────────┘
+```
+
+### Context Management
+
+Copilot CLI uses several strategies that differ from the VS Code-based agents:
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│            COPILOT CLI CONTEXT STRATEGIES                       │
+│                                                                 │
+│  1. Isolated Sub-agent Contexts                                 │
+│     Each sub-agent has its OWN context window                   │
+│     Main agent context stays clean                              │
+│     (vs. Cline/Roo: single shared context)                     │
+│                                                                 │
+│  2. Progressive Skill Loading                                   │
+│     Skills load in 3 stages: metadata → instructions → scripts │
+│     Only relevant skills consume context tokens                 │
+│     (vs. Cline/Roo: no equivalent mechanism)                   │
+│                                                                 │
+│  3. Auto-compaction (/compact)                                  │
+│     At 95% context limit, auto-summarizes history               │
+│     Can also be triggered manually                              │
+│                                                                 │
+│  4. Custom Instructions Hierarchy                               │
+│     AGENTS.md, CLAUDE.md, GEMINI.md                             │
+│     .github/copilot-instructions.md                             │
+│     .github/instructions/**/*.instructions.md                   │
+│     ~/.copilot/copilot-instructions.md                          │
+│                                                                 │
+│  5. Session Persistence                                         │
+│     Full timeline stored in ~/.copilot/session-state/           │
+│     Resume sessions with /resume or --continue                  │
+│                                                                 │
+└────────────────────────────────────────────────────────────────┘
+```
+
+### MCP Integration
+
+Copilot CLI ships with the **GitHub MCP server built-in** — no configuration needed for GitHub API access. Additional MCP servers are added via `/mcp add`:
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│            COPILOT CLI MCP SETUP                                │
+│                                                                 │
+│  Built-in:                                                      │
+│  ┌─────────────────────────────┐                                │
+│  │  GitHub MCP Server          │  Issues, PRs, repos, actions  │
+│  │  (pre-configured)           │  No setup required             │
+│  └─────────────────────────────┘                                │
+│                                                                 │
+│  User-added (via /mcp add):                                     │
+│  ┌─────────────────────────────┐                                │
+│  │  Custom MCP Servers         │  Stored in                    │
+│  │  (any JSON-RPC server)      │  ~/.copilot/mcp-config.json   │
+│  └─────────────────────────────┘                                │
+│                                                                 │
+│  vs. Cline:    MCP supported, no built-in servers               │
+│  vs. Roo Code: MCP + McpHub management layer                   │
+│                                                                 │
+└────────────────────────────────────────────────────────────────┘
+```
+
+### The 4-Layer Extensibility Model
+
+This is the key architectural differentiator — Copilot CLI has **four distinct layers** for extending agent behavior, each solving a different problem:
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│           4-LAYER EXTENSIBILITY MODEL                           │
+│                                                                 │
+│  Layer 4: Plugins                                               │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │ Bundled features with slash commands                      │  │
+│  │ Can group skills + tools into distributable packages      │  │
+│  │ Example: /my-deploy-plugin                                │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│                                                                 │
+│  Layer 3: MCP Servers                                           │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │ External TOOLS — actions the agent can take              │  │
+│  │ JSON-RPC protocol, any language                           │  │
+│  │ Example: database queries, CI/CD triggers, GitHub API     │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│                                                                 │
+│  Layer 2: Custom Agents                                         │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │ Specialized PERSONAS with constrained tools/instructions │  │
+│  │ .agent.md files at user/repo/org level                    │  │
+│  │ Example: security-reviewer, docs-writer, perf-optimizer   │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│                                                                 │
+│  Layer 1: Skills                                                │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │ KNOWLEDGE — procedural instructions for domains          │  │
+│  │ SKILL.md + scripts, progressively loaded                  │  │
+│  │ Portable across agents (agentskills.io standard)          │  │
+│  │ Example: testing strategies, API design patterns          │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│                                                                 │
+│  Comparison:                                                    │
+│  • Cline:    MCP only (1 layer)                                │
+│  • Roo Code: MCP + Custom Modes (2 layers)                     │
+│  • Copilot:  Skills + Agents + MCP + Plugins (4 layers)        │
+│                                                                 │
+└────────────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## Head-to-Head Comparison
 
 ### Architecture & Stack
 
-| Aspect | Cline | Roo Code |
-|--------|-------|----------|
-| **Origin** | Independent open-source project | Fork of Cline, expanded |
-| **Extension** | VS Code (TypeScript) | VS Code (TypeScript) |
-| **UI** | React webview | React webview |
-| **CLI** | Go-based standalone CLI | — |
-| **IPC** | gRPC + Protobuf | VS Code API + MCP |
-| **Cloud** | — | Roo Code Cloud (multi-agent) |
+| Aspect | Cline | Roo Code | Copilot CLI |
+|--------|-------|----------|-------------|
+| **Origin** | Independent open-source | Fork of Cline, expanded | GitHub (proprietary) |
+| **Platform** | VS Code extension | VS Code extension | Terminal-native |
+| **UI** | React webview | React webview | Terminal (TTY) |
+| **CLI** | Go-based standalone CLI | — | Primary interface |
+| **IPC** | gRPC + Protobuf | VS Code API + MCP | MCP + session state |
+| **Cloud** | — | Roo Code Cloud | GitHub Copilot coding agent |
 
 ### Agent Behavior
 
-| Aspect | Cline | Roo Code |
-|--------|-------|----------|
-| **Agent Pattern** | Single ReAct agent | Multi-mode, role-based agents |
-| **Planning** | Plan mode (single agent) | Architect Mode (dedicated) |
-| **Execution** | Act mode (same agent) | Code Mode (specialized) |
-| **Approval** | Every action needs approval | Configurable (strict ↔ autonomous) |
-| **Custom Roles** | Not supported | Fully customizable modes |
+| Aspect | Cline | Roo Code | Copilot CLI |
+|--------|-------|----------|-------------|
+| **Agent Pattern** | Single ReAct agent | Multi-mode, role-based | Main agent + sub-agents |
+| **Planning** | Plan mode (single agent) | Architect Mode (dedicated) | Plan mode + explore sub-agent |
+| **Execution** | Act mode (same agent) | Code Mode (specialized) | Main agent or task sub-agent |
+| **Approval** | Every action needs approval | Configurable (strict ↔ auto) | Per-tool approval, `/allow-all` |
+| **Custom Roles** | Not supported | Fully customizable modes | Custom .agent.md profiles |
+| **Parallel Work** | — | — | Fleet mode (parallel sub-agents) |
 
 ### Tools & Search
 
-| Aspect | Cline | Roo Code |
-|--------|-------|----------|
-| **File I/O** | Read, write, diff | Read, write, diff |
-| **Terminal** | Command execution + output | Command execution + output |
-| **Browser** | Headless automation | Headless automation |
-| **Code Search** | Regex (ripgrep) + AST (tree-sitter) | Regex + AST + semantic embeddings |
-| **MCP** | Full support | Full support + management layer |
+| Aspect | Cline | Roo Code | Copilot CLI |
+|--------|-------|----------|-------------|
+| **File I/O** | Read, write, diff | Read, write, diff | Read, write, diff |
+| **Terminal** | Command execution | Command execution | Command execution |
+| **Browser** | Headless automation | Headless automation | — |
+| **Code Search** | Regex (ripgrep) + AST | Regex + AST + embeddings | Regex (ripgrep) + glob + LSP |
+| **MCP** | Full support | Full support + McpHub | Built-in GitHub MCP + custom |
+| **Skills** | — | — | Progressive SKILL.md system |
+| **Plugins** | — | — | Slash command bundles |
 
 ### Context & Memory
 
-| Aspect | Cline | Roo Code |
-|--------|-------|----------|
-| **Context Strategy** | AST parsing, smart windowing | Large windows, context condensation |
-| **Memory** | Per-session + project files | Memory Bank (persistent, cross-session) |
-| **Checkpoints** | Manual (via approvals) | Session & profile-based snapshots |
-| **Semantic Search** | — | Vector embeddings, semantic index |
+| Aspect | Cline | Roo Code | Copilot CLI |
+|--------|-------|----------|-------------|
+| **Context Strategy** | AST parsing, smart windowing | Large windows, condensation | Sub-agent isolation + compaction |
+| **Memory** | Per-session + project files | Memory Bank (cross-session) | Session state + custom instructions |
+| **Checkpoints** | Manual (via approvals) | Session & profile snapshots | Session timeline + /resume |
+| **Semantic Search** | — | Vector embeddings | LSP-based code intelligence |
+| **Progressive Loading** | — | — | Skills load in 3 stages |
 
 ### Cost & Models
 
-| Aspect | Cline | Roo Code |
-|--------|-------|----------|
-| **Model Support** | Multi-provider, configurable | Multi-provider, per-mode profiles |
-| **Cost Control** | Manual model selection | Task-based auto-routing |
-| **Local Models** | Ollama, LM Studio | Ollama, LM Studio |
-| **Cost Savings** | Depends on user choices | Up to 97% with smart routing |
+| Aspect | Cline | Roo Code | Copilot CLI |
+|--------|-------|----------|-------------|
+| **Model Support** | Multi-provider, configurable | Multi-provider, per-mode | Claude Sonnet, GPT-5 + others |
+| **Cost Control** | Manual model selection | Task-based auto-routing | Premium request quota system |
+| **Local Models** | Ollama, LM Studio | Ollama, LM Studio | — (cloud-only) |
+| **Cloud Delegation** | — | Roo Code Cloud | /delegate to coding agent |
 
 ### When to Use Which?
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                                                                  │
-│  Choose CLINE when:                Choose ROO CODE when:         │
-│  ─────────────────────             ───────────────────────       │
-│  ✓ Safety is paramount            ✓ Speed matters most           │
-│  ✓ Regulated codebase             ✓ Cost optimization needed     │
-│  ✓ Learning agent concepts        ✓ Team collaboration           │
-│  ✓ Want full control              ✓ Complex multi-step tasks     │
-│  ✓ Simple, predictable UX        ✓ Custom agent behaviors        │
-│  ✓ CLI usage needed              ✓ Large codebase handling        │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────┐
+│                                                                           │
+│  Choose CLINE when:        Choose ROO CODE when:    Choose COPILOT CLI:  │
+│  ─────────────────────     ───────────────────────  ──────────────────── │
+│  ✓ Safety is paramount    ✓ Speed matters most      ✓ Terminal-first     │
+│  ✓ Regulated codebase     ✓ Cost optimization       ✓ GitHub ecosystem   │
+│  ✓ Learning agent basics  ✓ Team collaboration      ✓ Parallel sub-tasks │
+│  ✓ Want full control      ✓ Complex multi-step      ✓ Skills/portability │
+│  ✓ Simple, predictable   ✓ Custom agent behaviors   ✓ Local↔Cloud hand  │
+│  ✓ Browser automation    ✓ Large codebase           ✓ Enterprise/org     │
+│                                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -586,7 +940,7 @@ Roo Code Cloud extends the local extension into a **multi-agent collaboration pl
 
 ### 1. MCP as Universal Tool Protocol
 
-Both agents use MCP, making it the emerging standard for AI tool integration. Key takeaway: **decouple your tools from your agent**. Write tools as MCP servers, and any agent can use them.
+All three agents use MCP, making it the emerging standard for AI tool integration. Key takeaway: **decouple your tools from your agent**. Write tools as MCP servers, and any agent can use them.
 
 ```
 Agent-specific tools     →    MCP standard tools
@@ -606,26 +960,27 @@ Roo Code's modes prove that **constrained agents outperform general-purpose ones
 
 ### 3. Human-in-the-Loop vs. Autonomous
 
-Cline and Roo Code represent two ends of a spectrum:
+Cline, Roo Code, and Copilot CLI represent different positions on the approval spectrum:
 
 ```
-Cline                                                     Roo Code
-│ ◄────────────── APPROVAL SPECTRUM ──────────────► │
-│                                                      │
-│  Every action    Configurable     Most actions       │
-│  approved        checkpoints      autonomous         │
-│                                                      │
-│  Safer           Balanced         Faster             │
-│  Slower          Flexible         Riskier            │
+Cline              Copilot CLI                          Roo Code
+│ ◄──────────────── APPROVAL SPECTRUM ──────────────► │
+│                       │                                │
+│  Every action    Per-tool approval     Most actions    │
+│  approved        (granular control)    autonomous      │
+│                                                        │
+│  Safest          Balanced              Fastest         │
+│  Slowest         Flexible              Riskier         │
 ```
 
 **Design lesson**: Let users choose their position on this spectrum based on risk tolerance and task type.
 
 ### 4. Persistent Memory & Session Management
 
-Both agents solve the "amnesia problem" differently:
+All three agents solve the "amnesia problem" differently:
 - **Cline**: Structured markdown files (`projectbrief.md`, `progress.md`)
 - **Roo Code**: Memory Bank with profiles and semantic indexing
+- **Copilot CLI**: Session timeline persistence + custom instructions hierarchy
 
 This connects directly to Day 5's RAG concepts — persistent memory is just RAG applied to the agent's own history.
 
@@ -633,43 +988,65 @@ This connects directly to Day 5's RAG concepts — persistent memory is just RAG
 
 Roo Code's profile system demonstrates a critical production pattern: **not every task needs the best model**. Design your agent systems to route tasks to appropriately-sized models.
 
-### 6. IDE-Native Agent Design
+### 6. IDE-Native vs. Terminal-Native Agent Design
 
-Both agents are built into VS Code rather than running as standalone tools. This gives them:
-- Direct file system access (no upload/download cycle)
-- Terminal integration (run commands in the user's environment)
-- Diff previews (show changes before applying)
-- Native UI (no context switching between tools)
+Cline and Roo Code are built into VS Code, while Copilot CLI runs in the terminal. Each approach has trade-offs:
 
-**Lesson**: The best agent UX minimizes friction by meeting developers where they already work.
+```
+VS Code Extension (Cline/Roo)         Terminal-Native (Copilot CLI)
+──────────────────────────────         ──────────────────────────────
+• Rich diff previews in editor        • No IDE dependency
+• Browser automation (webview)        • Works over SSH / remote
+• Inline code annotations             • Faster startup
+• Native UI panels                    • Scriptable / composable
+• Tight editor integration            • Works in any environment
+```
+
+**Lesson**: The best agent UX depends on the workflow — visual tasks favor IDE integration, automation and remote work favor terminal-native design.
+
+### 7. Skills as Portable Knowledge Packages
+
+Copilot CLI's Skills system introduces a pattern absent in Cline and Roo Code: **separating procedural knowledge from tool execution**. Skills teach the agent _how_ to approach problems, while MCP tools give it _actions_ to perform.
+
+```
+Skills (knowledge)          MCP Tools (actions)
+──────────────────          ──────────────────
+• "How to test APIs"       • "Run pytest command"
+• "Security review rules"  • "Query GitHub API"
+• "API design patterns"    • "Create Jira ticket"
+• Progressively loaded     • All-or-nothing loaded
+• Portable (agentskills)   • Portable (MCP standard)
+```
+
+**Design lesson**: The most powerful agents combine _knowledge_ (what to do) with _tools_ (how to do it). Consider separating these concerns in your own agent designs.
 
 ---
 
 ## Connection to Syllabus Concepts
 
-This table maps every concept from the 7-day syllabus to its real-world implementation in Cline and Roo Code:
+This table maps every concept from the 7-day syllabus to its real-world implementation in Cline, Roo Code, and GitHub Copilot CLI:
 
-| Syllabus Day | Concept | Cline Implementation | Roo Code Implementation |
-|---|---|---|---|
-| **Day 1**: LLM Foundations | Tokenization, context windows | Smart context slicing, AST parsing | Context condensation, large windows |
-| **Day 1**: LLM Foundations | Model selection | Multi-provider support | Per-mode model profiles |
-| **Day 2**: Prompt Engineering | System prompts, CoT | Mode-specific prompts | Role-based system prompts per mode |
-| **Day 2**: Prompt Engineering | Structured output | JSON tool call formatting | JSON tool calls + MCP schemas |
-| **Day 3**: ReAct Agent | Think → Act → Observe loop | Plan → Act → Approve cycle | Mode Router → Execute → Observe |
-| **Day 3**: ReAct Agent | Tool definitions | Built-in tool registry | Built-in + MCP extensible tools |
-| **Day 3**: ReAct Agent | Memory types | Project files (short + long term) | Memory Bank (short + long + episodic) |
-| **Day 4**: Planner/Executor | Task decomposition | Plan mode proposes steps | Architect mode creates plans |
-| **Day 4**: Planner/Executor | Critic loops | Human approval as critic | Configurable review checkpoints |
-| **Day 4**: Planner/Executor | Guardrails | All actions require approval | Tool restrictions per mode |
-| **Day 5**: RAG + Memory | Vector search | — | Semantic index with embeddings |
-| **Day 5**: RAG + Memory | Persistent knowledge | Markdown project files | Memory Bank + profiles |
-| **Day 5**: RAG + Memory | Chunking strategies | File-level context slicing | Context condensation algorithms |
-| **Day 6**: Multi-Agent | Agent roles | Single agent (all roles) | Architect, Code, Debug, Test, Custom |
-| **Day 6**: Multi-Agent | Orchestration | — | Mode Router + Roo Code Cloud |
-| **Day 6**: Multi-Agent | Communication | — | Cloud: Planner↔Coder↔Reviewer |
-| **Day 7**: Full System | Production architecture | VS Code + gRPC + MCP | VS Code + MCP + Cloud platform |
-| **Day 7**: Full System | Safety & governance | Human-in-the-loop everywhere | Configurable approval + SOC2 |
-| **Day 7**: Full System | Scalability | Single user, local | Team collaboration, cloud agents |
+| Syllabus Day | Concept | Cline | Roo Code | Copilot CLI |
+|---|---|---|---|---|
+| **Day 1**: LLM Foundations | Tokenization, context windows | AST parsing, smart windowing | Context condensation, large windows | Sub-agent isolation, auto-compaction |
+| **Day 1**: LLM Foundations | Model selection | Multi-provider support | Per-mode model profiles | /model command, per-agent model |
+| **Day 2**: Prompt Engineering | System prompts, CoT | Mode-specific prompts | Role-based system prompts | Custom instructions hierarchy |
+| **Day 2**: Prompt Engineering | Structured output | JSON tool call formatting | JSON tool calls + MCP schemas | JSON tool calls + MCP schemas |
+| **Day 3**: ReAct Agent | Think → Act → Observe | Plan → Act → Approve cycle | Mode Router → Execute → Observe | Main agent → delegate → consolidate |
+| **Day 3**: ReAct Agent | Tool definitions | Built-in tool registry | Built-in + MCP tools | 4-layer: Skills + Agents + MCP + Plugins |
+| **Day 3**: ReAct Agent | Memory types | Project files (short + long) | Memory Bank (all 3 types) | Session state + instructions + skills |
+| **Day 4**: Planner/Executor | Task decomposition | Plan mode proposes steps | Architect mode plans | Plan mode + explore sub-agent |
+| **Day 4**: Planner/Executor | Critic loops | Human approval as critic | Review checkpoints | Code-review sub-agent |
+| **Day 4**: Planner/Executor | Guardrails | All actions need approval | Tool restrictions per mode | Per-tool approval, custom agent tool lists |
+| **Day 5**: RAG + Memory | Vector search | — | Semantic index (embeddings) | LSP-based code intelligence |
+| **Day 5**: RAG + Memory | Persistent knowledge | Markdown project files | Memory Bank + profiles | Skills (SKILL.md) + custom instructions |
+| **Day 5**: RAG + Memory | Chunking strategies | File-level context slicing | Context condensation | Progressive skill loading (3 stages) |
+| **Day 6**: Multi-Agent | Agent roles | Single agent (all roles) | Architect, Code, Debug, Test | Explore, Task, Review, General, Custom |
+| **Day 6**: Multi-Agent | Orchestration | — | Mode Router + Cloud | Fleet mode (parallel sub-agents) |
+| **Day 6**: Multi-Agent | Communication | — | Cloud: Planner↔Coder↔Reviewer | /delegate to cloud coding agent |
+| **Day 7**: Full System | Production architecture | VS Code + gRPC + MCP | VS Code + MCP + Cloud | Terminal + MCP + GitHub cloud agent |
+| **Day 7**: Full System | Safety & governance | Human-in-the-loop | Configurable approval + SOC2 | Per-tool approval + org-level agents |
+| **Day 7**: Full System | Scalability | Single user, local | Team collaboration, cloud | /delegate + /resume (local↔cloud) |
 
 ---
 
@@ -686,6 +1063,14 @@ This table maps every concept from the 7-day syllabus to its real-world implemen
 - **Documentation**: [docs.roocode.com](https://docs.roocode.com/)
 - **MCP Guide**: [docs.roocode.com/features/mcp](https://docs.roocode.com/features/mcp/overview/)
 - **Roo Code Cloud**: [roocode.com](https://roocode.com/)
+
+### GitHub Copilot CLI
+- **GitHub**: [github.com/github/copilot-cli](https://github.com/github/copilot-cli)
+- **Documentation**: [docs.github.com/copilot](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli)
+- **Custom Agents Guide**: [docs.github.com — Custom Agents](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/create-custom-agents-for-cli)
+- **Skills Guide**: [docs.github.com — Skills](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/create-skills)
+- **DeepWiki Architecture**: [deepwiki.com/github/copilot-cli](https://deepwiki.com/github/copilot-cli/6.1-system-architecture-overview)
+- **Agent Skills Standard**: [agentskills.io](https://agentskills.io)
 
 ### MCP Standard
 - **Specification**: [modelcontextprotocol.io](https://modelcontextprotocol.io/docs/getting-started/intro)
