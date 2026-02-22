@@ -78,7 +78,8 @@
         { "title": "33. Xbox Matchmaking", "path": "microsoft-system-design/33-design-xbox-matchmaking.md" },
         { "title": "34. LinkedIn Feed", "path": "microsoft-system-design/34-design-linkedin-news-feed.md" },
         { "title": "35. LinkedIn PYMK", "path": "microsoft-system-design/35-design-linkedin-people-you-may-know.md" },
-        { "title": "36. Azure Key Vault", "path": "microsoft-system-design/36-design-azure-key-vault.md" }
+        { "title": "36. Azure Key Vault", "path": "microsoft-system-design/36-design-azure-key-vault.md" },
+        { "title": "49. GitHub Copilot", "path": "microsoft-system-design/49-design-github-copilot.md" }
       ]
     },
     {
@@ -112,7 +113,8 @@
         { "title": "Day 4: Planner/Executor", "path": "ai-agents/04-planner-executor.md" },
         { "title": "Day 5: RAG + Vector Memory", "path": "ai-agents/05-rag-vector-memory.md" },
         { "title": "Day 6: Multi-Agent", "path": "ai-agents/06-multi-agent-collaboration.md" },
-        { "title": "Day 7: Final Project", "path": "ai-agents/07-final-project-copilot.md" }
+        { "title": "Day 7: Final Project", "path": "ai-agents/07-final-project-copilot.md" },
+        { "title": "Appendix: Real-World Agents", "path": "ai-agents/appendix-real-world-agents.md" }
       ]
     }
   ]

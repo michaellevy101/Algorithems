@@ -31,6 +31,7 @@ Each day includes:
 | [Day 5](05-rag-vector-memory.md) | RAG + Vector Memory | Embeddings, chunking, hybrid search | Agent with RAG + dynamic memory |
 | [Day 6](06-multi-agent-collaboration.md) | Multi-Agent Collaboration | Orchestration, agent roles, deadlocks | 3-agent system solving real tasks |
 | [Day 7](07-final-project-copilot.md) | Final Project: Build Your Copilot | Full system integration | Production-quality agentic system |
+| [Appendix](appendix-real-world-agents.md) | Real-World Agents: Cline & Roo Code | MCP, modes, memory, cost routing | Mental model of production agents |
 
 ## 🧭 How to Use This Guide
 
@@ -61,8 +62,13 @@ Day 6: Multi-Agent              ← Agent collaboration
     │
     ▼
 Day 7: Final Project            ← Senior-level system
+    │
+    ▼
+Appendix: Cline & Roo Code     ← Production case studies
 ```
 
 ---
 
 **Let's begin → [Day 1: Modern LLM Foundations](01-llm-foundations.md)**
+
+**Or jump to → [Appendix: Real-World Agents (Cline & Roo Code)](appendix-real-world-agents.md)**
