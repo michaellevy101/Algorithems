@@ -24,7 +24,11 @@ Each day includes:
 
 | Day | Topic | Key Concepts | Deliverable |
 |-----|-------|-------------|-------------|
-| [Day 1](01-llm-foundations.md) | Modern LLM Foundations | Transformers, tokenization, RLHF, inference | Running local model + performance notes |
+| [Day 1](01-llm-foundations.md) | Modern LLM Foundations | Transformers, tokenization, RLHF, inference | Tokenization explorer + sampling visualizer |
+|  ↳ [Part A](01a-tokens-and-embeddings.md) | Tokens & Embeddings | BPE, subword tokenization, embedding space | |
+|  ↳ [Part B](01b-transformer-and-attention.md) | Transformer & Attention | Q/K/V, multi-head attention, FFN, residuals | |
+|  ↳ [Part C](01c-training-and-inference.md) | Training & Inference | Positional encoding, SFT, RLHF/DPO, sampling | |
+|  ↳ [Appendix](01d-advanced-topics-appendix.md) | Advanced Techniques | MoE, GQA, LoRA, quantization, scaling laws | |
 | [Day 2](02-prompt-engineering.md) | Advanced Prompt Engineering | CoT, structured output, function calling | Reusable prompt library with validators |
 | [Day 3](03-single-agent-react.md) | Single-Agent Systems (ReAct) | ReAct loop, tools, memory types | Functioning ReAct agent with tools |
 | [Day 4](04-planner-executor.md) | Planner/Executor Architecture | Task decomposition, critic loops, guardrails | Planner/Executor system with Critic |
@@ -32,6 +36,10 @@ Each day includes:
 | [Day 6](06-multi-agent-collaboration.md) | Multi-Agent Collaboration | Orchestration, agent roles, deadlocks | 3-agent system solving real tasks |
 | [Day 7](07-final-project-copilot.md) | Final Project: Build Your Copilot | Full system integration | Production-quality agentic system |
 | [Appendix](appendix-real-world-agents.md) | Real-World Agents: Cline & Roo Code | MCP, modes, memory, cost routing | Mental model of production agents |
+| [Appendix](appendix-agent-protocols.md) | Agent Protocols: MCP, A2A, ACP & more | MCP, A2A, ACP, AG-UI, ANP | Protocol selection & composition |
+| [Appendix](appendix-agent-authentication.md) | Agent Authentication & Identity | Managed Identity, Entra Agent ID, Foundry Blueprints, MCP auth | Identity proof per scenario |
+| [Appendix](identity-security-guide.md) | Identity Security (CrowdStrike) | ITDR, FalconID, zero trust, attack landscape | Defense playbook & threat awareness |
+| [Appendix](graphrag-guide.md) | GraphRAG & Book Summarization | Knowledge graphs, Leiden communities, iterative refinement, RAGAS | Iterative book summarizer pipeline |
 
 ## 🧭 How to Use This Guide
 
@@ -65,6 +73,18 @@ Day 7: Final Project            ← Senior-level system
     │
     ▼
 Appendix: Cline & Roo Code     ← Production case studies
+    │
+    ▼
+Appendix: Agent Protocols      ← MCP, A2A, ACP, AG-UI, ANP
+    │
+    ▼
+Appendix: Agent Authentication ← Identity, Azure MI, Foundry, MCP auth
+    │
+    ▼
+Appendix: Identity Security    ← CrowdStrike, ITDR, defense playbook
+    │
+    ▼
+Appendix: GraphRAG             ← Knowledge graphs, book summarization
 ```
 
 ---
@@ -72,3 +92,5 @@ Appendix: Cline & Roo Code     ← Production case studies
 **Let's begin → [Day 1: Modern LLM Foundations](01-llm-foundations.md)**
 
 **Or jump to → [Appendix: Real-World Agents (Cline & Roo Code)](appendix-real-world-agents.md)**
+
+**Or jump to → [Appendix: Agent Protocols (MCP, A2A, ACP & more)](appendix-agent-protocols.md)**
