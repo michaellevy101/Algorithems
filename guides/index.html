@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algorithm &amp; System Design Study Guides</title>
+<style>
+  :root {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-tertiary: #21262d;
+    --border: #30363d;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --text-link: #58a6ff;
+    --text-link-hover: #79c0ff;
+    --accent-green: #3fb950;
+    --accent-purple: #bc8cff;
+    --accent-orange: #d29922;
+    --pdf-badge: #da3633;
+    --tag-bg: #388bfd26;
+    --tag-text: #58a6ff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Noto Sans, Helvetica, Arial, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 1.5rem 1.5rem;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  header h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  header h1 span { color: var(--text-link); }
+
+  header p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .search-box {
+    max-width: 560px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .search-box svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none;
+  }
+
+  #search {
+    width: 100%;
+    padding: 10px 14px 10px 38px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  #search:focus { border-color: var(--text-link); }
+  #search::placeholder { color: var(--text-secondary); }
+
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+  }
+
+  .stats span strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .section { margin-bottom: 2.5rem; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header h2 {
+    font-size: 1.35rem;
+    font-weight: 600;
+  }
+
+  .section-icon { font-size: 1.3rem; }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 0.5rem;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+  }
+
+  .guide-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .guide-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0.85rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: background 0.15s;
+  }
+
+  .guide-item:hover { background: var(--bg-tertiary); }
+
+  .guide-item a {
+    color: var(--text-link);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .guide-item a:hover { color: var(--text-link-hover); text-decoration: underline; }
+
+  .guide-num {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 400;
+    margin-right: 0.4rem;
+  }
+
+  .pdf-link {
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+    color: var(--pdf-badge);
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border: 1px solid var(--pdf-badge);
+    border-radius: 4px;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+
+  .pdf-link:hover { background: var(--pdf-badge); color: #fff; }
+
+  .subsection { margin-top: 1.25rem; margin-bottom: 1rem; }
+
+  .subsection-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .subsection-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.4rem;
+  }
+
+  .tech-grid .guide-item { padding: 0.45rem 0.7rem; }
+  .tech-grid .guide-item a { font-size: 0.85rem; }
+
+  .no-results {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-secondary);
+    display: none;
+  }
+
+  .no-results .emoji { font-size: 2.5rem; margin-bottom: 0.5rem; }
+
+  footer {
+    text-align: center;
+    padding: 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .section-algo .section-header h2 { color: var(--accent-green); }
+  .section-ai .section-header h2 { color: var(--accent-purple); }
+  .section-sd .section-header h2 { color: var(--accent-orange); }
+
+  @media (max-width: 640px) {
+    header { padding: 1.25rem 1rem 1rem; }
+    header h1 { font-size: 1.3rem; }
+    .guide-grid, .tech-grid { grid-template-columns: 1fr; }
+    .stats { flex-wrap: wrap; gap: 0.75rem; }
+    main { padding: 1rem 0.75rem 2rem; }
+  }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📚 <span>Algorithm &amp; System Design</span> Study Guides</h1>
+  <p>Interview preparation reference — algorithms, AI agents, and Microsoft system design</p>
+  <div class="search-box">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M11.5 7a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Zm-.82 4.74a6 6 0 1 1 1.06-1.06l3.04 3.04a.75.75 0 1 1-1.06 1.06l-3.04-3.04Z"/></svg>
+    <input type="text" id="search" placeholder="Filter guides by name… (press / to focus)" autocomplete="off" spellcheck="false">
+  </div>
+  <div class="stats">
+    <span>🧮 Algorithms: <strong>16</strong></span>
+    <span>🤖 AI &amp; Agents: <strong>19</strong></span>
+    <span>☁️ System Design: <strong>54</strong></span>
+    <span>🔧 Technologies: <strong>26</strong></span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ══════════════════════ ALGORITHMS ══════════════════════ -->
+  <div class="section section-algo" data-section="algorithms">
+    <div class="section-header">
+      <span class="section-icon">🧮</span>
+      <h2>Algorithm Guides</h2>
+      <span class="badge">16 guides</span>
+    </div>
+    <div class="guide-grid">
+      <div class="guide-item" data-name="union find disjoint set">
+        <a href="algorithms/01_Union_Find.md"><span class="guide-num">01</span> Union Find</a>
+        <a class="pdf-link" href="algorithms/01_Union_Find.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="binary search">
+        <a href="algorithms/02_Binary_Search.md"><span class="guide-num">02</span> Binary Search</a>
+        <a class="pdf-link" href="algorithms/02_Binary_Search.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="two pointers">
+        <a href="algorithms/03_Two_Pointers.md"><span class="guide-num">03</span> Two Pointers</a>
+        <a class="pdf-link" href="algorithms/03_Two_Pointers.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="sliding window">
+        <a href="algorithms/04_Sliding_Window.md"><span class="guide-num">04</span> Sliding Window</a>
+        <a class="pdf-link" href="algorithms/04_Sliding_Window.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="monotonic stack">
+        <a href="algorithms/05_Monotonic_Stack.md"><span class="guide-num">05</span> Monotonic Stack</a>
+        <a class="pdf-link" href="algorithms/05_Monotonic_Stack.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="intervals merge overlap">
+        <a href="algorithms/06_Intervals.md"><span class="guide-num">06</span> Intervals</a>
+        <a class="pdf-link" href="algorithms/06_Intervals.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="topk heaps priority queue">
+        <a href="algorithms/07_TopK_Heaps.md"><span class="guide-num">07</span> TopK &amp; Heaps</a>
+        <a class="pdf-link" href="algorithms/07_TopK_Heaps.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="greedy">
+        <a href="algorithms/08_Greedy.md"><span class="guide-num">08</span> Greedy</a>
+        <a class="pdf-link" href="algorithms/08_Greedy.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="dynamic programming dp">
+        <a href="algorithms/09_Dynamic_Programming.md"><span class="guide-num">09</span> Dynamic Programming</a>
+        <a class="pdf-link" href="algorithms/09_Dynamic_Programming.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="graph algorithms bfs dfs dijkstra">
+        <a href="algorithms/10_Graph_Algorithms.md"><span class="guide-num">10</span> Graph Algorithms</a>
+        <a class="pdf-link" href="algorithms/10_Graph_Algorithms.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="tree algorithms binary tree bst">
+        <a href="algorithms/11_Tree_Algorithms.md"><span class="guide-num">11</span> Tree Algorithms</a>
+        <a class="pdf-link" href="algorithms/11_Tree_Algorithms.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="backtracking recursion dfs">
+        <a href="algorithms/12_Backtracking.md"><span class="guide-num">12</span> Backtracking</a>
+        <a class="pdf-link" href="algorithms/12_Backtracking.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="trie strings string matching">
+        <a href="algorithms/13_Trie_Strings.md"><span class="guide-num">13</span> Trie &amp; Strings</a>
+        <a class="pdf-link" href="algorithms/13_Trie_Strings.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="math bits bit manipulation">
+        <a href="algorithms/14_Math_Bits.md"><span class="guide-num">14</span> Math &amp; Bits</a>
+        <a class="pdf-link" href="algorithms/14_Math_Bits.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="java data structures collections">
+        <a href="algorithms/15_Java_DataStructures.md"><span class="guide-num">15</span> Java Data Structures</a>
+        <a class="pdf-link" href="algorithms/15_Java_DataStructures.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="flow algorithms network flow max flow">
+        <a href="algorithms/16_Flow_Algorithms.md"><span class="guide-num">16</span> Flow Algorithms</a>
+        <a class="pdf-link" href="algorithms/16_Flow_Algorithms.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+    </div>
+    <div class="subsection">
+      <div class="subsection-header">
+        <span>📖</span>
+        <h3>Additional Resources</h3>
+      </div>
+      <div class="guide-grid">
+        <div class="guide-item" data-name="algorithms readme syllabus overview">
+          <a href="algorithms/README.md">📋 Algorithms Syllabus</a>
+        </div>
+        <div class="guide-item" data-name="union find learning guide tutorial">
+          <a href="algorithms/UnionFind_Learning_Guide.md">📝 Union Find Learning Guide</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════ AI & AGENTS ══════════════════════ -->
+  <div class="section section-ai" data-section="ai-agents">
+    <div class="section-header">
+      <span class="section-icon">🤖</span>
+      <h2>AI &amp; Agents Guides</h2>
+      <span class="badge">19 guides</span>
+    </div>
+    <div class="subsection">
+      <div class="subsection-header">
+        <span>🎓</span>
+        <h3>Core Curriculum</h3>
+      </div>
+      <div class="guide-grid">
+        <div class="guide-item" data-name="syllabus readme overview ai agents">
+          <a href="ai-agents/README.md">📋 Syllabus &amp; Overview</a>
+          <a class="pdf-link" href="ai-agents/README.pdf" title="Download PDF">📄 PDF</a>
+        </div>
+        <div class="guide-item" data-name="llm foundations large language models">
+          <a href="ai-agents/01-llm-foundations.md"><span class="guide-num">01</span> LLM Foundations</a>
+          <a class="pdf-link" href="ai-agents/01-llm-foundations.pdf" title="Download PDF">📄 PDF</a>
+        </div>
+        <div class="guide-item" data-name="tokens embeddings tokenization">
+          <a href="ai-agents/01a-tokens-and-embeddings.md"><span class="guide-num">01a</span> Tokens &amp; Embeddings</a>
+          <a class="pdf-link" href="ai-agents/01a-tokens-and-embeddings.pdf" title="Download PDF">📄 PDF</a>
+        </div>
+        <div class="guide-item" data-name="transformer attention mechanism self-attention">
+          <a href="ai-agents/01b-transformer-and-attention.md"><span class="guide-num">01b</span> Transformer &amp; Attention</a>
+          <a class="pdf-link" href="ai-agents/01b-transformer-and-attention.pdf" title="Download PDF">📄 PDF</a>
+        </div>
+        <div class="guide-item" data-name="training inference fine-tuning rlhf">
+          <a href="ai-agents/01c-training-and-inference.md"><span class="guide-num">01c</span> Training &amp; Inference</a>
+          <a class="pdf-link" href="ai-agents/01c-training-and-inference.pdf" title="Download PDF">📄 PDF</a>
+        </div>
+        <div class="guide-item" data-name="advanced topics appendix scaling laws">
+          <a href="ai-agents/01d-advanced-topics-appendix.md"><span class="guide-num">01d</span> Advanced Topics Appendix</a>
+          <a class="pdf-link" href="ai-agents/01d-advanced-topics-appendix.pdf" title="Download PDF">📄 PDF</a>
+        </div>
+        <div class="guide-item" data-name="prompt engineering prompting chain of thought">
+          <a href="ai-agents/02-prompt-engineering.md"><span class="guide-num">02</span> Prompt Engineering</a>
+          <a class="pdf-link" href="ai-agents/02-prompt-engineering.pdf" title="Download PDF">📄 PDF</a>
+        </div>
+        <div class="guide-item" data-name="single agent react reasoning acting">
+          <a href="ai-agents/03-single-agent-react.md"><span class="guide-num">03</span> Single Agent (ReAct)</a>
+          <a class="pdf-link" href="ai-agents/03-single-agent-react.pdf" title="Download PDF">📄 PDF</a>
+        </div>
+        <div class="guide-item" data-name="planner executor plan and execute">
+          <a href="ai-agents/04-planner-executor.md"><span class="guide-num">04</span> Planner-Executor</a>
+          <a class="pdf-link" href="ai-agents/04-planner-executor.pdf" title="Download PDF">📄 PDF</a>
+        </div>
+        <div class="guide-item" data-name="rag vector memory retrieval augmented generation">
+          <a href="ai-agents/05-rag-vector-memory.md"><span class="guide-num">05</span> RAG &amp; Vector Memory</a>
+          <a class="pdf-link" href="ai-agents/05-rag-vector-memory.pdf" title="Download PDF">📄 PDF</a>
+        </div>
+        <div class="guide-item" data-name="multi agent collaboration swarm">
+          <a href="ai-agents/06-multi-agent-collaboration.md"><span class="guide-num">06</span> Multi-Agent Collaboration</a>
+          <a class="pdf-link" href="ai-agents/06-multi-agent-collaboration.pdf" title="Download PDF">📄 PDF</a>
+        </div>
+        <div class="guide-item" data-name="final project copilot build agent">
+          <a href="ai-agents/07-final-project-copilot.md"><span class="guide-num">07</span> Final Project — Copilot</a>
+          <a class="pdf-link" href="ai-agents/07-final-project-copilot.pdf" title="Download PDF">📄 PDF</a>
+        </div>
+      </div>
+    </div>
+    <div class="subsection">
+      <div class="subsection-header">
+        <span>📎</span>
+        <h3>Appendices &amp; Reference</h3>
+      </div>
+      <div class="guide-grid">
+        <div class="guide-item" data-name="real world agents production examples">
+          <a href="ai-agents/appendix-real-world-agents.md">Appendix — Real-World Agents</a>
+          <a class="pdf-link" href="ai-agents/appendix-real-world-agents.pdf" title="Download PDF">📄 PDF</a>
+        </div>
+        <div class="guide-item" data-name="agent protocols mcp a2a">
+          <a href="ai-agents/appendix-agent-protocols.md">Appendix — Agent Protocols</a>
+        </div>
+        <div class="guide-item" data-name="agent authentication oauth security">
+          <a href="ai-agents/appendix-agent-authentication.md">Appendix — Agent Authentication</a>
+          <a class="pdf-link" href="ai-agents/appendix-agent-authentication.pdf" title="Download PDF">📄 PDF</a>
+        </div>
+        <div class="guide-item" data-name="identity security guide zero trust">
+          <a href="ai-agents/identity-security-guide.md">Identity &amp; Security Guide</a>
+          <a class="pdf-link" href="ai-agents/identity-security-guide.pdf" title="Download PDF">📄 PDF</a>
+        </div>
+        <div class="guide-item" data-name="graphrag knowledge graph retrieval">
+          <a href="ai-agents/graphrag-guide.md">GraphRAG Guide</a>
+          <a class="pdf-link" href="ai-agents/graphrag-guide.pdf" title="Download PDF">📄 PDF</a>
+        </div>
+        <div class="guide-item" data-name="fine tuning lora qlora peft">
+          <a href="ai-agents/fine-tuning-guide.md">Fine-Tuning Guide</a>
+          <a class="pdf-link" href="ai-agents/fine-tuning-guide.pdf" title="Download PDF">📄 PDF</a>
+        </div>
+        <div class="guide-item" data-name="interview cheat sheet quick reference">
+          <a href="ai-agents/interview-cheat-sheet.md">Interview Cheat Sheet</a>
+          <a class="pdf-link" href="ai-agents/interview-cheat-sheet.pdf" title="Download PDF">📄 PDF</a>
+        </div>
+        <div class="guide-item" data-name="qa reference questions answers">
+          <a href="ai-agents/qa-reference.md">Q&amp;A Reference</a>
+          <a class="pdf-link" href="ai-agents/qa-reference.pdf" title="Download PDF">📄 PDF</a>
+        </div>
+      </div>
+    </div>
+    <div class="subsection">
+      <div class="subsection-header">
+        <span>📕</span>
+        <h3>Complete Compilation</h3>
+      </div>
+      <div class="guide-grid">
+        <div class="guide-item" data-name="ai agents complete guide full compilation pdf">
+          <a class="pdf-link" href="ai-agents/AI_Agents_Complete_Guide.pdf" title="Download complete AI Agents guide" style="margin-left:0;font-size:0.9rem;padding:6px 12px">📄 AI Agents Complete Guide (PDF)</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════ SYSTEM DESIGN ══════════════════════ -->
+  <div class="section section-sd" data-section="system-design">
+    <div class="section-header">
+      <span class="section-icon">☁️</span>
+      <h2>Microsoft System Design Guides</h2>
+      <span class="badge">54 guides</span>
+    </div>
+    <div class="guide-grid">
+      <div class="guide-item" data-name="system design readme syllabus overview">
+        <a href="microsoft-system-design/README.md">📋 Syllabus &amp; Overview</a>
+        <a class="pdf-link" href="microsoft-system-design/README.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="microsoft teams chat messaging presence">
+        <a href="microsoft-system-design/01-microsoft-teams.md"><span class="guide-num">01</span> Microsoft Teams</a>
+        <a class="pdf-link" href="microsoft-system-design/01-microsoft-teams.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="scalable azure service cloud">
+        <a href="microsoft-system-design/02-scalable-azure-service.md"><span class="guide-num">02</span> Scalable Azure Service</a>
+        <a class="pdf-link" href="microsoft-system-design/02-scalable-azure-service.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="multi-tenant cloud solution saas">
+        <a href="microsoft-system-design/03-architect-a-multi-tenant-cloud-solution.md"><span class="guide-num">03</span> Multi-Tenant Cloud Solution</a>
+        <a class="pdf-link" href="microsoft-system-design/03-architect-a-multi-tenant-cloud-solution.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="url shortening service tinyurl">
+        <a href="microsoft-system-design/04-design-a-url-shortening-service.md"><span class="guide-num">04</span> URL Shortening Service</a>
+        <a class="pdf-link" href="microsoft-system-design/04-design-a-url-shortening-service.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="search autocomplete typeahead suggestion">
+        <a href="microsoft-system-design/05-design-search-autocomplete-typeahead.md"><span class="guide-num">05</span> Search Autocomplete / Typeahead</a>
+        <a class="pdf-link" href="microsoft-system-design/05-design-search-autocomplete-typeahead.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="uber lyft ride sharing platform">
+        <a href="microsoft-system-design/06-design-uber-lyft-ride-sharing-platform.md"><span class="guide-num">06</span> Uber / Lyft Ride-Sharing</a>
+        <a class="pdf-link" href="microsoft-system-design/06-design-uber-lyft-ride-sharing-platform.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="content delivery network cdn">
+        <a href="microsoft-system-design/07-design-a-content-delivery-network.md"><span class="guide-num">07</span> Content Delivery Network</a>
+        <a class="pdf-link" href="microsoft-system-design/07-design-a-content-delivery-network.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="whatsapp slack chat messaging">
+        <a href="microsoft-system-design/08-design-whatsapp-slack-chat-messaging.md"><span class="guide-num">08</span> WhatsApp / Slack Chat</a>
+        <a class="pdf-link" href="microsoft-system-design/08-design-whatsapp-slack-chat-messaging.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="web crawler scalable spider">
+        <a href="microsoft-system-design/09-design-a-scalable-web-crawler.md"><span class="guide-num">09</span> Scalable Web Crawler</a>
+        <a class="pdf-link" href="microsoft-system-design/09-design-a-scalable-web-crawler.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="collaborative document editing google docs">
+        <a href="microsoft-system-design/10-design-collaborative-document-editing.md"><span class="guide-num">10</span> Collaborative Document Editing</a>
+        <a class="pdf-link" href="microsoft-system-design/10-design-collaborative-document-editing.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="notification service push email sms">
+        <a href="microsoft-system-design/11-design-a-notification-service.md"><span class="guide-num">11</span> Notification Service</a>
+        <a class="pdf-link" href="microsoft-system-design/11-design-a-notification-service.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="distributed file storage onedrive dropbox">
+        <a href="microsoft-system-design/12-design-distributed-file-storage.md"><span class="guide-num">12</span> Distributed File Storage</a>
+        <a class="pdf-link" href="microsoft-system-design/12-design-distributed-file-storage.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="optimize cost performance cloud spending">
+        <a href="microsoft-system-design/13-optimize-cost-while-maintaining-performance.md"><span class="guide-num">13</span> Optimize Cost &amp; Performance</a>
+        <a class="pdf-link" href="microsoft-system-design/13-optimize-cost-while-maintaining-performance.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="high availability regions disaster recovery">
+        <a href="microsoft-system-design/14-design-high-availability-across-regions.md"><span class="guide-num">14</span> High Availability Across Regions</a>
+        <a class="pdf-link" href="microsoft-system-design/14-design-high-availability-across-regions.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="meeting scheduling system calendar">
+        <a href="microsoft-system-design/15-design-meeting-scheduling-system.md"><span class="guide-num">15</span> Meeting Scheduling System</a>
+        <a class="pdf-link" href="microsoft-system-design/15-design-meeting-scheduling-system.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="rate limiter throttling api">
+        <a href="microsoft-system-design/16-design-a-rate-limiter.md"><span class="guide-num">16</span> Rate Limiter</a>
+        <a class="pdf-link" href="microsoft-system-design/16-design-a-rate-limiter.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="sharding partitioning database horizontal">
+        <a href="microsoft-system-design/17-implement-sharding-and-partitioning.md"><span class="guide-num">17</span> Sharding &amp; Partitioning</a>
+        <a class="pdf-link" href="microsoft-system-design/17-implement-sharding-and-partitioning.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="video streaming platform youtube netflix">
+        <a href="microsoft-system-design/18-design-video-streaming-platform.md"><span class="guide-num">18</span> Video Streaming Platform</a>
+        <a class="pdf-link" href="microsoft-system-design/18-design-video-streaming-platform.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="message ordering chat consistency">
+        <a href="microsoft-system-design/19-ensure-message-ordering-in-chat.md"><span class="guide-num">19</span> Message Ordering in Chat</a>
+        <a class="pdf-link" href="microsoft-system-design/19-ensure-message-ordering-in-chat.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="secure sensitive data gdpr hipaa compliance">
+        <a href="microsoft-system-design/20-secure-sensitive-data-gdpr-hipaa.md"><span class="guide-num">20</span> Secure Data (GDPR / HIPAA)</a>
+        <a class="pdf-link" href="microsoft-system-design/20-secure-sensitive-data-gdpr-hipaa.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="real-time location tracking gps">
+        <a href="microsoft-system-design/21-design-real-time-location-tracking.md"><span class="guide-num">21</span> Real-Time Location Tracking</a>
+        <a class="pdf-link" href="microsoft-system-design/21-design-real-time-location-tracking.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="logging monitoring observability">
+        <a href="microsoft-system-design/22-design-logging-monitoring.md"><span class="guide-num">22</span> Logging &amp; Monitoring</a>
+        <a class="pdf-link" href="microsoft-system-design/22-design-logging-monitoring.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="load balancer l4 l7 traffic">
+        <a href="microsoft-system-design/23-design-a-load-balancer.md"><span class="guide-num">23</span> Load Balancer</a>
+        <a class="pdf-link" href="microsoft-system-design/23-design-a-load-balancer.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="eventual consistency distributed">
+        <a href="microsoft-system-design/24-handle-eventual-consistency.md"><span class="guide-num">24</span> Eventual Consistency</a>
+        <a class="pdf-link" href="microsoft-system-design/24-handle-eventual-consistency.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="real-time log processing streaming pipeline">
+        <a href="microsoft-system-design/25-design-real-time-log-processing.md"><span class="guide-num">25</span> Real-Time Log Processing</a>
+        <a class="pdf-link" href="microsoft-system-design/25-design-real-time-log-processing.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="cap theorem trade-offs consistency availability">
+        <a href="microsoft-system-design/26-handle-cap-theorem-trade-offs.md"><span class="guide-num">26</span> CAP Theorem Trade-Offs</a>
+        <a class="pdf-link" href="microsoft-system-design/26-handle-cap-theorem-trade-offs.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="microservices monolith architecture">
+        <a href="microsoft-system-design/27-microservices-vs-monolith.md"><span class="guide-num">27</span> Microservices vs Monolith</a>
+        <a class="pdf-link" href="microsoft-system-design/27-microservices-vs-monolith.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="database schema evolution migration">
+        <a href="microsoft-system-design/28-database-schema-evolution.md"><span class="guide-num">28</span> Database Schema Evolution</a>
+        <a class="pdf-link" href="microsoft-system-design/28-database-schema-evolution.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="recommendation engine ml collaborative filtering">
+        <a href="microsoft-system-design/29-design-a-recommendation-engine.md"><span class="guide-num">29</span> Recommendation Engine</a>
+        <a class="pdf-link" href="microsoft-system-design/29-design-a-recommendation-engine.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="trade-off discussions system design">
+        <a href="microsoft-system-design/30-trade-off-discussions.md"><span class="guide-num">30</span> Trade-Off Discussions</a>
+        <a class="pdf-link" href="microsoft-system-design/30-trade-off-discussions.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="teams video conferencing webrtc">
+        <a href="microsoft-system-design/31-design-teams-video-conferencing.md"><span class="guide-num">31</span> Teams Video Conferencing</a>
+        <a class="pdf-link" href="microsoft-system-design/31-design-teams-video-conferencing.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="xbox live leaderboard gaming ranking">
+        <a href="microsoft-system-design/32-design-xbox-live-leaderboard.md"><span class="guide-num">32</span> Xbox Live Leaderboard</a>
+        <a class="pdf-link" href="microsoft-system-design/32-design-xbox-live-leaderboard.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="xbox matchmaking gaming multiplayer">
+        <a href="microsoft-system-design/33-design-xbox-matchmaking.md"><span class="guide-num">33</span> Xbox Matchmaking</a>
+        <a class="pdf-link" href="microsoft-system-design/33-design-xbox-matchmaking.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="linkedin news feed social">
+        <a href="microsoft-system-design/34-design-linkedin-news-feed.md"><span class="guide-num">34</span> LinkedIn News Feed</a>
+        <a class="pdf-link" href="microsoft-system-design/34-design-linkedin-news-feed.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="linkedin people you may know social graph">
+        <a href="microsoft-system-design/35-design-linkedin-people-you-may-know.md"><span class="guide-num">35</span> LinkedIn People You May Know</a>
+        <a class="pdf-link" href="microsoft-system-design/35-design-linkedin-people-you-may-know.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="azure key vault secrets certificates">
+        <a href="microsoft-system-design/36-design-azure-key-vault.md"><span class="guide-num">36</span> Azure Key Vault</a>
+        <a class="pdf-link" href="microsoft-system-design/36-design-azure-key-vault.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="distributed id generator snowflake uuid">
+        <a href="microsoft-system-design/37-design-distributed-id-generator.md"><span class="guide-num">37</span> Distributed ID Generator</a>
+        <a class="pdf-link" href="microsoft-system-design/37-design-distributed-id-generator.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="distributed cache redis memcached">
+        <a href="microsoft-system-design/38-design-distributed-cache.md"><span class="guide-num">38</span> Distributed Cache</a>
+        <a class="pdf-link" href="microsoft-system-design/38-design-distributed-cache.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="distributed job scheduler cron task queue">
+        <a href="microsoft-system-design/39-design-distributed-job-scheduler.md"><span class="guide-num">39</span> Distributed Job Scheduler</a>
+        <a class="pdf-link" href="microsoft-system-design/39-design-distributed-job-scheduler.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="key value store nosql database">
+        <a href="microsoft-system-design/40-design-key-value-store.md"><span class="guide-num">40</span> Key-Value Store</a>
+        <a class="pdf-link" href="microsoft-system-design/40-design-key-value-store.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="distributed locking service mutex">
+        <a href="microsoft-system-design/41-design-distributed-locking-service.md"><span class="guide-num">41</span> Distributed Locking Service</a>
+        <a class="pdf-link" href="microsoft-system-design/41-design-distributed-locking-service.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="ticket booking system reservation concert">
+        <a href="microsoft-system-design/42-design-ticket-booking-system.md"><span class="guide-num">42</span> Ticket Booking System</a>
+        <a class="pdf-link" href="microsoft-system-design/42-design-ticket-booking-system.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="proximity service nearby geospatial">
+        <a href="microsoft-system-design/43-design-proximity-service.md"><span class="guide-num">43</span> Proximity Service</a>
+        <a class="pdf-link" href="microsoft-system-design/43-design-proximity-service.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="web analytics system tracking events">
+        <a href="microsoft-system-design/44-design-web-analytics-system.md"><span class="guide-num">44</span> Web Analytics System</a>
+        <a class="pdf-link" href="microsoft-system-design/44-design-web-analytics-system.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="ad bidding system advertising rtb">
+        <a href="microsoft-system-design/45-design-ad-bidding-system.md"><span class="guide-num">45</span> Ad Bidding System</a>
+        <a class="pdf-link" href="microsoft-system-design/45-design-ad-bidding-system.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="e-commerce platform shopping cart order">
+        <a href="microsoft-system-design/46-design-e-commerce-platform.md"><span class="guide-num">46</span> E-Commerce Platform</a>
+        <a class="pdf-link" href="microsoft-system-design/46-design-e-commerce-platform.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="payment gateway stripe transactions">
+        <a href="microsoft-system-design/47-design-payment-gateway.md"><span class="guide-num">47</span> Payment Gateway</a>
+        <a class="pdf-link" href="microsoft-system-design/47-design-payment-gateway.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="azure entra identity platform aad authentication">
+        <a href="microsoft-system-design/48-design-azure-entra-identity-platform.md"><span class="guide-num">48</span> Azure Entra Identity Platform</a>
+        <a class="pdf-link" href="microsoft-system-design/48-design-azure-entra-identity-platform.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="github copilot ai code completion">
+        <a href="microsoft-system-design/49-design-github-copilot.md"><span class="guide-num">49</span> GitHub Copilot</a>
+        <a class="pdf-link" href="microsoft-system-design/49-design-github-copilot.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="azure ai foundry machine learning studio">
+        <a href="microsoft-system-design/50-design-azure-ai-foundry.md"><span class="guide-num">50</span> Azure AI Foundry</a>
+        <a class="pdf-link" href="microsoft-system-design/50-design-azure-ai-foundry.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="ai soc platform security operations center">
+        <a href="microsoft-system-design/51-design-ai-soc-platform.md"><span class="guide-num">51</span> AI SOC Platform</a>
+        <a class="pdf-link" href="microsoft-system-design/51-design-ai-soc-platform.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="twitter social media timeline">
+        <a href="microsoft-system-design/52-design-twitter.md"><span class="guide-num">52</span> Twitter</a>
+        <a class="pdf-link" href="microsoft-system-design/52-design-twitter.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="waze navigation maps routing">
+        <a href="microsoft-system-design/53-design-waze-navigation.md"><span class="guide-num">53</span> Waze Navigation</a>
+        <a class="pdf-link" href="microsoft-system-design/53-design-waze-navigation.pdf" title="Download PDF">📄 PDF</a>
+      </div>
+      <div class="guide-item" data-name="web search engine bing google">
+        <a href="microsoft-system-design/54-design-web-search-engine.md"><span class="guide-num">54</span> Web Search Engine</a>
+      </div>
+    </div>
+
+    <!-- Teams Deep-Dive -->
+    <div class="subsection">
+      <div class="subsection-header">
+        <span>💬</span>
+        <h3>Microsoft Teams — Deep Dive</h3>
+      </div>
+      <div class="guide-grid">
+        <div class="guide-item" data-name="teams deep dive readme overview">
+          <a href="microsoft-system-design/01-microsoft-teams/README.md">📋 Teams Overview</a>
+        </div>
+        <div class="guide-item" data-name="teams chat messaging real-time">
+          <a href="microsoft-system-design/01-microsoft-teams/chat.md">Chat</a>
+        </div>
+        <div class="guide-item" data-name="teams video conferencing calling">
+          <a href="microsoft-system-design/01-microsoft-teams/video.md">Video</a>
+        </div>
+        <div class="guide-item" data-name="teams video deep dive webrtc sfu">
+          <a href="microsoft-system-design/01-microsoft-teams/video-deep-dive.md">Video Deep Dive</a>
+        </div>
+        <div class="guide-item" data-name="teams presence status online away">
+          <a href="microsoft-system-design/01-microsoft-teams/presence.md">Presence</a>
+        </div>
+        <div class="guide-item" data-name="teams notifications push alerts">
+          <a href="microsoft-system-design/01-microsoft-teams/notifications.md">Notifications</a>
+        </div>
+        <div class="guide-item" data-name="teams files storage sharepoint">
+          <a href="microsoft-system-design/01-microsoft-teams/files.md">Files</a>
+        </div>
+        <div class="guide-item" data-name="teams databases storage cosmos sql">
+          <a href="microsoft-system-design/01-microsoft-teams/databases.md">Databases</a>
+        </div>
+        <div class="guide-item" data-name="teams technologies stack infrastructure">
+          <a href="microsoft-system-design/01-microsoft-teams/technologies.md">Technologies</a>
+        </div>
+        <div class="guide-item" data-name="teams interview tips system design">
+          <a href="microsoft-system-design/01-microsoft-teams/interview-tips.md">Interview Tips</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technologies Reference -->
+    <div class="subsection">
+      <div class="subsection-header">
+        <span>🔧</span>
+        <h3>Technologies Reference</h3>
+        <span class="badge">26</span>
+      </div>
+      <div class="tech-grid">
+        <div class="guide-item" data-name="technologies readme overview reference">
+          <a href="microsoft-system-design/technologies/README.md">📋 Overview</a>
+        </div>
+        <div class="guide-item" data-name="aks kubernetes container orchestration">
+          <a href="microsoft-system-design/technologies/aks-kubernetes.md">AKS / Kubernetes</a>
+        </div>
+        <div class="guide-item" data-name="bloom filter probabilistic data structure">
+          <a href="microsoft-system-design/technologies/bloom-filter.md">Bloom Filter</a>
+        </div>
+        <div class="guide-item" data-name="cassandra wide-column nosql database">
+          <a href="microsoft-system-design/technologies/cassandra.md">Cassandra</a>
+        </div>
+        <div class="guide-item" data-name="cdn content delivery network caching">
+          <a href="microsoft-system-design/technologies/cdn.md">CDN</a>
+        </div>
+        <div class="guide-item" data-name="circuit breaker resilience fault tolerance">
+          <a href="microsoft-system-design/technologies/circuit-breaker.md">Circuit Breaker</a>
+        </div>
+        <div class="guide-item" data-name="clickhouse olap analytics columnar database">
+          <a href="microsoft-system-design/technologies/clickhouse.md">ClickHouse</a>
+        </div>
+        <div class="guide-item" data-name="consistent hashing distributed partitioning">
+          <a href="microsoft-system-design/technologies/consistent-hashing.md">Consistent Hashing</a>
+        </div>
+        <div class="guide-item" data-name="cosmos db azure nosql globally distributed">
+          <a href="microsoft-system-design/technologies/cosmos-db.md">Cosmos DB</a>
+        </div>
+        <div class="guide-item" data-name="elasticsearch search engine full-text lucene">
+          <a href="microsoft-system-design/technologies/elasticsearch.md">Elasticsearch</a>
+        </div>
+        <div class="guide-item" data-name="flink spark streaming batch processing">
+          <a href="microsoft-system-design/technologies/flink-spark.md">Flink / Spark</a>
+        </div>
+        <div class="guide-item" data-name="geohash spatial indexing location">
+          <a href="microsoft-system-design/technologies/geohash.md">Geohash</a>
+        </div>
+        <div class="guide-item" data-name="hsm hardware security module encryption">
+          <a href="microsoft-system-design/technologies/hsm.md">HSM</a>
+        </div>
+        <div class="guide-item" data-name="hyperloglog cardinality estimation probabilistic">
+          <a href="microsoft-system-design/technologies/hyperloglog.md">HyperLogLog</a>
+        </div>
+        <div class="guide-item" data-name="kafka event streaming message queue">
+          <a href="microsoft-system-design/technologies/kafka.md">Kafka</a>
+        </div>
+        <div class="guide-item" data-name="load balancer traffic distribution l4 l7">
+          <a href="microsoft-system-design/technologies/load-balancer.md">Load Balancer</a>
+        </div>
+        <div class="guide-item" data-name="lsm tree log-structured merge storage engine">
+          <a href="microsoft-system-design/technologies/lsm-tree.md">LSM Tree</a>
+        </div>
+        <div class="guide-item" data-name="postgresql relational database sql acid">
+          <a href="microsoft-system-design/technologies/postgresql.md">PostgreSQL</a>
+        </div>
+        <div class="guide-item" data-name="quadtree spatial index 2d partitioning">
+          <a href="microsoft-system-design/technologies/quadtree.md">Quadtree</a>
+        </div>
+        <div class="guide-item" data-name="raft consensus distributed agreement leader">
+          <a href="microsoft-system-design/technologies/raft-consensus.md">Raft Consensus</a>
+        </div>
+        <div class="guide-item" data-name="rate limiter throttling token bucket">
+          <a href="microsoft-system-design/technologies/rate-limiter.md">Rate Limiter</a>
+        </div>
+        <div class="guide-item" data-name="redis cache in-memory key-value">
+          <a href="microsoft-system-design/technologies/redis.md">Redis</a>
+        </div>
+        <div class="guide-item" data-name="saga pattern distributed transactions compensation">
+          <a href="microsoft-system-design/technologies/saga-pattern.md">Saga Pattern</a>
+        </div>
+        <div class="guide-item" data-name="signalr real-time websocket aspnet">
+          <a href="microsoft-system-design/technologies/signalr.md">SignalR</a>
+        </div>
+        <div class="guide-item" data-name="vector databases embeddings similarity search">
+          <a href="microsoft-system-design/technologies/vector-databases.md">Vector Databases</a>
+        </div>
+        <div class="guide-item" data-name="webrtc real-time communication peer-to-peer">
+          <a href="microsoft-system-design/technologies/webrtc.md">WebRTC</a>
+        </div>
+        <div class="guide-item" data-name="websocket real-time bidirectional connection">
+          <a href="microsoft-system-design/technologies/websocket.md">WebSocket</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Compiled PDFs -->
+    <div class="subsection">
+      <div class="subsection-header">
+        <span>📕</span>
+        <h3>Compiled PDFs</h3>
+      </div>
+      <div class="guide-grid">
+        <div class="guide-item" data-name="infrastructure scalability compiled pdf">
+          <a class="pdf-link" href="microsoft-system-design/Infrastructure_Scalability.pdf" title="Download PDF" style="margin-left:0;font-size:0.9rem;padding:6px 12px">📄 Infrastructure &amp; Scalability</a>
+        </div>
+        <div class="guide-item" data-name="microsoft products azure services compiled pdf">
+          <a class="pdf-link" href="microsoft-system-design/Microsoft_Products_Azure_Services.pdf" title="Download PDF" style="margin-left:0;font-size:0.9rem;padding:6px 12px">📄 Microsoft Products &amp; Azure Services</a>
+        </div>
+        <div class="guide-item" data-name="web services applications compiled pdf">
+          <a class="pdf-link" href="microsoft-system-design/Web_Services_Applications.pdf" title="Download PDF" style="margin-left:0;font-size:0.9rem;padding:6px 12px">📄 Web Services &amp; Applications</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="no-results" id="no-results">
+    <div class="emoji">🔍</div>
+    <p>No guides match your search.</p>
+  </div>
+
+</main>
+
+<footer>
+  <p>Algorithm &amp; System Design Study Guides — built for interview preparation</p>
+</footer>
+
+<script>
+(function() {
+  var searchInput = document.getElementById('search');
+  var allItems = document.querySelectorAll('.guide-item');
+  var sections = document.querySelectorAll('.section');
+  var subsections = document.querySelectorAll('.subsection');
+  var noResults = document.getElementById('no-results');
+
+  searchInput.addEventListener('input', function() {
+    var query = this.value.toLowerCase().trim();
+    var visibleCount = 0;
+
+    allItems.forEach(function(item) {
+      var name = item.getAttribute('data-name') || '';
+      var linkText = item.querySelector('a') ? item.querySelector('a').textContent.toLowerCase() : '';
+      var match = !query || name.indexOf(query) !== -1 || linkText.indexOf(query) !== -1;
+      item.classList.toggle('hidden', !match);
+      if (match) visibleCount++;
+    });
+
+    sections.forEach(function(sec) {
+      var hasVisible = sec.querySelector('.guide-item:not(.hidden)');
+      sec.classList.toggle('hidden', !hasVisible);
+    });
+
+    subsections.forEach(function(sub) {
+      var hasVisible = sub.querySelector('.guide-item:not(.hidden)');
+      sub.classList.toggle('hidden', !hasVisible);
+    });
+
+    noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === '/' && document.activeElement !== searchInput) {
+      e.preventDefault();
+      searchInput.focus();
+    }
+    if (e.key === 'Escape' && document.activeElement === searchInput) {
+      searchInput.value = '';
+      searchInput.dispatchEvent(new Event('input'));
+      searchInput.blur();
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
