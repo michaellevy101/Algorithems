@@ -1,0 +1,1450 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Problems Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50;
+            margin-top: 2em;
+            margin-bottom: 1em;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid #e74c3c; padding-bottom: 8px; }
+        h3 { font-size: 1.5em; color: #e67e22; }
+        
+        code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 2px 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            line-height: 1.45;
+        }
+        
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            border-radius: 0;
+        }
+        
+        blockquote {
+            border-left: 4px solid #3498db;
+            background-color: #ecf0f1;
+            padding: 15px 20px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+        
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        @media print {
+            body { font-size: 12px; }
+            h1 { font-size: 20px; }
+            h2 { font-size: 16px; }
+            h3 { font-size: 14px; }
+            pre { font-size: 10px; }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+</head>
+<body>
+<h1>Algorithm Interview Reference — Problems Guide</h1><br>
+*Curated Problems with Solutions and Analysis*<br>
+**Generated on:** January 06, 2026<br>
+**Content:** 16 comprehensive algorithm problem sets with detailed solutions and complexity analysis<br>
+---<br>
+<br>
+---<br>
+<br>
+<h1>01. Union Find</h1><br>
+<br>
+<h2>Common Problem Patterns</h2><br>
+<h3>1. Number of Islands</h3><br>
+<br>
+**Problem:** Given a 2D binary grid which represents a map of '1's (land) and '0's (water), return the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are surrounded by water.<br>
+<br>
+**Example:**<br>
+<pre><code>Input: grid = [<br>
+  ["1","1","1","1","0"],<br>
+  ["1","1","0","1","0"],<br>
+  ["1","1","0","0","0"],<br>
+  ["0","0","0","0","0"]<br>
+]<br>
+Output: 1</code></pre><br>
+<br>
+<pre><code>public int numIslands(char[][] grid) {<br>
+    if (grid == null || grid.length == 0) return 0;<br>
+    <br>
+    int rows = grid.length, cols = grid[0].length;<br>
+    UnionFind uf = new UnionFind(rows * cols + 1); // +1 for water dummy node<br>
+    <br>
+    int[][] directions = {{0,1}, {1,0}, {0,-1}, {-1,0}};<br>
+    int waterNode = rows * cols; // Dummy node for water<br>
+    <br>
+    for (int i = 0; i < rows; i++) {<br>
+        for (int j = 0; j < cols; j++) {<br>
+            if (grid[i][j] == '0') {<br>
+                // Connect water cells to dummy water node<br>
+                uf.union(i * cols + j, waterNode);<br>
+            } else {<br>
+                // Connect adjacent land cells<br>
+                for (int[] dir : directions) {<br>
+                    int newRow = i + dir[0];<br>
+                    int newCol = j + dir[1];<br>
+                    <br>
+                    if (newRow >= 0 && newRow < rows && <br>
+                        newCol >= 0 && newCol < cols && <br>
+                        grid[newRow][newCol] == '1') {<br>
+                        uf.union(i * cols + j, newRow * cols + newCol);<br>
+                    }<br>
+                }<br>
+            }<br>
+        }<br>
+    }<br>
+    <br>
+    return uf.getCount() - 1; // Subtract dummy water component<br>
+}</code></pre><br>
+<br>
+<h3>2. Friend Circles (Connected Components)</h3><br>
+<br>
+**Problem:** There are n people in a social network. You are given an n x n matrix isConnected where isConnected[i][j] = 1 if person i and person j are directly connected, and isConnected[i][j] = 0 otherwise. Return the total number of friend circles (connected components).<br>
+<br>
+**Example:**<br>
+<pre><code>Input: isConnected = [[1,1,0],[1,1,0],[0,0,1]]<br>
+Output: 2<br>
+Explanation: People 0 and 1 are friends, person 2 is alone. So there are 2 friend circles.</code></pre><br>
+<br>
+<pre><code>public int findCircleNum(int[][] isConnected) {<br>
+    int n = isConnected.length;<br>
+    UnionFind uf = new UnionFind(n);<br>
+    <br>
+    for (int i = 0; i < n; i++) {<br>
+        for (int j = i + 1; j < n; j++) {<br>
+            if (isConnected[i][j] == 1) {<br>
+                uf.union(i, j);<br>
+            }<br>
+        }<br>
+    }<br>
+    <br>
+    return uf.getCount();<br>
+}</code></pre><br>
+<br>
+<h3>3. Graph Valid Tree (Cycle Detection)</h3><br>
+<br>
+**Problem:** You have a graph of n nodes labeled from 0 to n - 1. You are given an integer n and a list of edges where edges[i] = [ai, bi] indicates that there is an undirected edge between nodes ai and bi in the graph. Return true if the edges of the given graph make up a valid tree, and false otherwise.<br>
+<br>
+**Example:**<br>
+<pre><code>Input: n = 5, edges = [[0,1],[0,2],[0,3],[1,4]]<br>
+Output: true<br>
+Explanation: The graph forms a valid tree.<br>
+<br>
+Input: n = 5, edges = [[0,1],[1,2],[2,3],[1,3],[1,4]]<br>
+Output: false<br>
+Explanation: The graph contains a cycle.</code></pre><br>
+<br>
+<pre><code>public boolean validTree(int n, int[][] edges) {<br>
+    // A valid tree has exactly n-1 edges and no cycles<br>
+    if (edges.length != n - 1) return false;<br>
+    <br>
+    UnionFind uf = new UnionFind(n);<br>
+    <br>
+    for (int[] edge : edges) {<br>
+        // If nodes are already connected, adding this edge creates a cycle<br>
+        if (uf.connected(edge[0], edge[1])) {<br>
+            return false;<br>
+        }<br>
+        uf.union(edge[0], edge[1]);<br>
+    }<br>
+    <br>
+    return uf.getCount() == 1; // Should be exactly one component<br>
+}</code></pre><br>
+<br>
+<h3>4. Accounts Merge</h3><br>
+<br>
+**Problem:** Given a list of accounts where each element accounts[i] is a list of strings, where the first element accounts[i][0] is a name, and the rest of the elements are emails representing emails of the account. Merge accounts that belong to the same person. Two accounts belong to the same person if there is some common email to both accounts.<br>
+<br>
+**Example:**<br>
+<pre><code>Input: accounts = [["John","johnsmith@mail.com","john_newyork@mail.com"],<br>
+                   ["John","johnsmith@mail.com","john00@mail.com"],<br>
+                   ["Mary","mary@mail.com"],<br>
+                   ["John","johnnybravo@mail.com"]]<br>
+Output: [["John","john00@mail.com","john_newyork@mail.com","johnsmith@mail.com"],<br>
+         ["Mary","mary@mail.com"],<br>
+         ["John","johnnybravo@mail.com"]]<br>
+Explanation: The first and second John's are the same person as they have the common email "johnsmith@mail.com".</code></pre><br>
+<br>
+<pre><code>public List<List<String>> accountsMerge(List<List<String>> accounts) {<br>
+    Map<String, Integer> emailToIndex = new HashMap<>();<br>
+    Map<String, String> emailToName = new HashMap<>();<br>
+    <br>
+    int index = 0;<br>
+    <br>
+    // Map emails to indices and names<br>
+    for (List<String> account : accounts) {<br>
+        String name = account.get(0);<br>
+        for (int i = 1; i < account.size(); i++) {<br>
+            String email = account.get(i);<br>
+            if (!emailToIndex.containsKey(email)) {<br>
+                emailToIndex.put(email, index++);<br>
+            }<br>
+            emailToName.put(email, name);<br>
+        }<br>
+    }<br>
+    <br>
+    UnionFind uf = new UnionFind(index);<br>
+    <br>
+    // Union emails from same account<br>
+    for (List<String> account : accounts) {<br>
+        String firstEmail = account.get(1);<br>
+        for (int i = 2; i < account.size(); i++) {<br>
+            uf.union(emailToIndex.get(firstEmail), emailToIndex.get(account.get(i)));<br>
+        }<br>
+    }<br>
+    <br>
+    // Group emails by root<br>
+    Map<Integer, List<String>> rootToEmails = new HashMap<>();<br>
+    for (String email : emailToIndex.keySet()) {<br>
+        int root = uf.find(emailToIndex.get(email));<br>
+        rootToEmails.computeIfAbsent(root, k -> new ArrayList<>()).add(email);<br>
+    }<br>
+    <br>
+    // Build result<br>
+    List<List<String>> result = new ArrayList<>();<br>
+    for (List<String> emails : rootToEmails.values()) {<br>
+        Collections.sort(emails);<br>
+        List<String> account = new ArrayList<>();<br>
+        account.add(emailToName.get(emails.get(0))); // Add name<br>
+        account.addAll(emails); // Add sorted emails<br>
+        result.add(account);<br>
+    }<br>
+    <br>
+    return result;<br>
+}</code></pre><br>
+<br>
+<h2>Advanced Variations</h2><br>
+<br>
+<h3>Union-Find with Size Tracking</h3><br>
+<pre><code>public class UnionFindWithSize {<br>
+    private int[] parent, size;<br>
+    private int count;<br>
+    <br>
+    public UnionFindWithSize(int n) {<br>
+        parent = new int[n];<br>
+        size = new int[n];<br>
+        count = n;<br>
+        <br>
+        for (int i = 0; i < n; i++) {<br>
+            parent[i] = i;<br>
+            size[i] = 1; // Each component initially has size 1<br>
+        }<br>
+    }<br>
+    <br>
+    public int find(int i) {<br>
+        if (parent[i] != i) {<br>
+            parent[i] = find(parent[i]);<br>
+        }<br>
+        return parent[i];<br>
+    }<br>
+    <br>
+    public void union(int i, int j) {<br>
+        int rootI = find(i);<br>
+        int rootJ = find(j);<br>
+        <br>
+        if (rootI != rootJ) {<br>
+            // Union by size: attach smaller component to larger<br>
+            if (size[rootI] < size[rootJ]) {<br>
+                parent[rootI] = rootJ;<br>
+                size[rootJ] += size[rootI];<br>
+            } else {<br>
+                parent[rootJ] = rootI;<br>
+                size[rootI] += size[rootJ];<br>
+            }<br>
+            count--;<br>
+        }<br>
+    }<br>
+    <br>
+    public int getComponentSize(int i) {<br>
+        return size[find(i)];<br>
+    }<br>
+}</code></pre><br>
+<br>
+<h2>Interview Tips</h2><br>
+<br>
+<h3>Pattern Recognition</h3><br>
+- When to identify this technique in problem statements<br>
+- Key indicators and problem characteristics<br>
+- Similar problem types and variations<br>
+<br>
+<h3>Common Mistakes</h3><br>
+- Implementation pitfalls to avoid<br>
+- Edge cases that are often missed<br>
+- Performance considerations<br>
+<br>
+<h3>Implementation Variations</h3><br>
+<pre><code>// Alternative approaches and optimizations<br>
+// Template code for common variations</code></pre><br>
+<br>
+<h2>Time & Space Complexity</h2><br>
+<br>
+| Operation | Time Complexity | Space Complexity |<br>
+|-----------|----------------|------------------|<br>
+| Constructor | O(n) | O(n) |<br>
+| Find (with path compression) | O(α(n))* | O(1) |<br>
+| Union (with union by rank) | O(α(n))* | O(1) |<br>
+| Connected | O(α(n))* | O(1) |<br>
+<br>
+*α(n) is the inverse Ackermann function, which grows extremely slowly and is effectively constant for all practical purposes.<br>
+<br>
+---<br>
+<br>
+[← Previous: Main Guide](README.md) | [Back to Main Guide](README.md) | [Next: Binary Search →](02_Binary_Search.md)<br>
+<br>
+---<br>
+<br>
+<h1>02. Binary Search</h1><br>
+<br>
+<h2>Common Problem Patterns</h2><br>
+<h3>1. Range Search - First and Last Occurrence</h3><br>
+<br>
+**Problem:** Given an array of integers nums sorted in non-decreasing order, find the starting and ending position of a given target value. If target is not found in the array, return [-1, -1]. You must write an algorithm with O(log n) runtime complexity.<br>
+<br>
+**Example:**<br>
+<pre><code>Input: nums = [5,7,7,8,8,10], target = 8<br>
+Output: [3,4]<br>
+Explanation: Target 8 is found at indices 3 and 4.<br>
+<br>
+Input: nums = [5,7,7,8,8,10], target = 6<br>
+Output: [-1,-1]<br>
+Explanation: Target 6 is not found.</code></pre><br>
+<br>
+**LeetCode 34 - Find First and Last Position of Element in Sorted Array**<br>
+<br>
+<pre><code>public int[] searchRange(int[] nums, int target) {<br>
+    int first = lowerBound(nums, target);<br>
+    <br>
+    // Check if target exists<br>
+    if (first == nums.length || nums[first] != target) {<br>
+        return new int[]{-1, -1};<br>
+    }<br>
+    <br>
+    int last = upperBound(nums, target) - 1;<br>
+    return new int[]{first, last};<br>
+}<br>
+<br>
+// Alternative approach using modified binary search<br>
+public int[] searchRangeAlternative(int[] nums, int target) {<br>
+    int[] result = {-1, -1};<br>
+    <br>
+    // Find first occurrence<br>
+    result[0] = findFirst(nums, target);<br>
+    if (result[0] == -1) return result;<br>
+    <br>
+    // Find last occurrence<br>
+    result[1] = findLast(nums, target);<br>
+    <br>
+    return result;<br>
+}<br>
+<br>
+private int findFirst(int[] nums, int target) {<br>
+    int left = 0, right = nums.length - 1;<br>
+    int result = -1;<br>
+    <br>
+    while (left <= right) {<br>
+        int mid = left + (right - left) / 2;<br>
+        if (nums[mid] == target) {<br>
+            result = mid;<br>
+            right = mid - 1; // Continue searching left<br>
+        } else if (nums[mid] < target) {<br>
+            left = mid + 1;<br>
+        } else {<br>
+            right = mid - 1;<br>
+        }<br>
+    }<br>
+    <br>
+    return result;<br>
+}<br>
+<br>
+private int findLast(int[] nums, int target) {<br>
+    int left = 0, right = nums.length - 1;<br>
+    int result = -1;<br>
+    <br>
+    while (left <= right) {<br>
+        int mid = left + (right - left) / 2;<br>
+        if (nums[mid] == target) {<br>
+            result = mid;<br>
+            left = mid + 1; // Continue searching right<br>
+        } else if (nums[mid] < target) {<br>
+            left = mid + 1;<br>
+        } else {<br>
+            right = mid - 1;<br>
+        }<br>
+    }<br>
+    <br>
+    return result;<br>
+}</code></pre><br>
+<br>
+<h3>2. Search in Rotated Sorted Array</h3><br>
+<br>
+**Problem:** There is an integer array nums sorted in ascending order (with distinct values). Prior to being passed to your function, nums is possibly rotated at an unknown pivot index k (1 <= k < nums.length) such that the resulting array is [nums[k], nums[k+1], ..., nums[n-1], nums[0], nums[1], ..., nums[k-1]] (0-indexed). For example, [0,1,2,4,5,6,7] might be rotated at pivot index 3 and become [4,5,6,7,0,1,2]. Given the array nums after the possible rotation and an integer target, return the index of target if it is in nums, or -1 if it is not in nums.<br>
+<br>
+**Example:**<br>
+<pre><code>Input: nums = [4,5,6,7,0,1,2], target = 0<br>
+Output: 4<br>
+<br>
+Input: nums = [4,5,6,7,0,1,2], target = 3<br>
+Output: -1</code></pre><br>
+<br>
+<pre><code>public int search(int[] nums, int target) {<br>
+    int left = 0, right = nums.length - 1;<br>
+    <br>
+    while (left <= right) {<br>
+        int mid = left + (right - left) / 2;<br>
+        <br>
+        if (nums[mid] == target) return mid;<br>
+        <br>
+        // Determine which half is sorted<br>
+        if (nums[left] <= nums[mid]) {<br>
+            // Left half is sorted<br>
+            if (target >= nums[left] && target < nums[mid]) {<br>
+                right = mid - 1; // Target in left half<br>
+            } else {<br>
+                left = mid + 1;   // Target in right half<br>
+            }<br>
+        } else {<br>
+            // Right half is sorted<br>
+            if (target > nums[mid] && target <= nums[right]) {<br>
+                left = mid + 1;   // Target in right half<br>
+            } else {<br>
+                right = mid - 1;  // Target in left half<br>
+            }<br>
+        }<br>
+    }<br>
+    <br>
+    return -1;<br>
+}</code></pre><br>
+<br>
+<h3>3. Find Minimum in Rotated Sorted Array</h3><br>
+<br>
+**Problem:** Suppose an array of length n sorted in ascending order is rotated between 1 and n times. For example, the array nums = [0,1,2,4,5,6,7] might become [4,5,6,7,0,1,2] if it was rotated 4 times. Given the sorted rotated array nums of unique elements, return the minimum element of this array.<br>
+<br>
+**Example:**<br>
+<pre><code>Input: nums = [3,4,5,1,2]<br>
+Output: 1<br>
+Explanation: The original array was [1,2,3,4,5] rotated 3 times.<br>
+<br>
+Input: nums = [4,5,6,7,0,1,2]<br>
+Output: 0<br>
+Explanation: The original array was [0,1,2,4,5,6,7] and it was rotated 4 times.</code></pre><br>
+<br>
+<pre><code>public int findMin(int[] nums) {<br>
+    int left = 0, right = nums.length - 1;<br>
+    <br>
+    while (left < right) {<br>
+        int mid = left + (right - left) / 2;<br>
+        <br>
+        if (nums[mid] > nums[right]) {<br>
+            // Minimum is in right half<br>
+            left = mid + 1;<br>
+        } else {<br>
+            // Minimum is in left half (including mid)<br>
+            right = mid;<br>
+        }<br>
+    }<br>
+    <br>
+    return nums[left];<br>
+}</code></pre><br>
+<br>
+<h2>Interview Tips</h2><br>
+<br>
+<h3>Pattern Recognition</h3><br>
+- When to identify this technique in problem statements<br>
+- Key indicators and problem characteristics<br>
+- Similar problem types and variations<br>
+<br>
+<h3>Common Mistakes</h3><br>
+- Implementation pitfalls to avoid<br>
+- Edge cases that are often missed<br>
+- Performance considerations<br>
+<br>
+<h3>Implementation Variations</h3><br>
+<pre><code>// Alternative approaches and optimizations<br>
+// Template code for common variations</code></pre><br>
+<br>
+<h2>Time & Space Complexity</h2><br>
+<br>
+| Operation | Time Complexity | Space Complexity |<br>
+|-----------|----------------|------------------|<br>
+| Standard Binary Search | O(log n) | O(1) |<br>
+| Lower/Upper Bound | O(log n) | O(1) |<br>
+| Search Range | O(log n) | O(1) |<br>
+| Binary Search on Answer | O(log(max-min) × f(n)) | O(1) |<br>
+<br>
+Where f(n) is the complexity of the feasibility check function.<br>
+<br>
+---<br>
+<br>
+[← Previous: Union-Find](01_Union_Find.md) | [Back to Main Guide](README.md) | [Next: Two Pointers →](03_Two_Pointers.md)<br>
+<br>
+---<br>
+<br>
+<h1>07. Topk Heaps</h1><br>
+<br>
+<h2>Common Problem Patterns</h2><br>
+<h3>1. Top-K Frequent Elements</h3><br>
+<br>
+**Problem:** Given an integer array nums and an integer k, return the k most frequent elements.<br>
+<br>
+**Example:**<br>
+<pre><code>Input: nums = [1,1,1,2,2,3], k = 2<br>
+Output: [1,2]</code></pre><br>
+<br>
+<pre><code>public int[] topKFrequent(int[] nums, int k) {<br>
+    // Count frequency<br>
+    Map<Integer, Integer> frequencyMap = new HashMap<>();<br>
+    for (int num : nums) {<br>
+        frequencyMap.put(num, frequencyMap.getOrDefault(num, 0) + 1);<br>
+    }<br>
+    <br>
+    // Use min-heap to track top k frequent elements<br>
+    PriorityQueue<int[]> minHeap = new PriorityQueue<>((a, b) -> a[1] - b[1]);<br>
+    <br>
+    for (Map.Entry<Integer, Integer> entry : frequencyMap.entrySet()) {<br>
+        minHeap.offer(new int[]{entry.getKey(), entry.getValue()});<br>
+        <br>
+        if (minHeap.size() > k) {<br>
+            minHeap.poll();<br>
+        }<br>
+    }<br>
+    <br>
+    // Extract results<br>
+    int[] result = new int[k];<br>
+    for (int i = k - 1; i >= 0; i--) {<br>
+        result[i] = minHeap.poll()[0];<br>
+    }<br>
+    <br>
+    return result;<br>
+}</code></pre><br>
+<br>
+<h3>2. Kth Largest Element in Array</h3><br>
+<br>
+**Problem:** Find the kth largest element in an unsorted array.<br>
+<br>
+**Example:**<br>
+<pre><code>Input: nums = [3,2,1,5,6,4], k = 2<br>
+Output: 5</code></pre><br>
+<br>
+<pre><code>public int findKthLargest(int[] nums, int k) {<br>
+    PriorityQueue<Integer> minHeap = new PriorityQueue<>();<br>
+    <br>
+    for (int num : nums) {<br>
+        minHeap.offer(num);<br>
+        <br>
+        if (minHeap.size() > k) {<br>
+            minHeap.poll();<br>
+        }<br>
+    }<br>
+    <br>
+    return minHeap.peek();<br>
+}<br>
+<br>
+// Alternative: Quick Select approach<br>
+public int findKthLargestQuickSelect(int[] nums, int k) {<br>
+    return quickSelect(nums, 0, nums.length - 1, nums.length - k);<br>
+}<br>
+<br>
+private int quickSelect(int[] nums, int left, int right, int targetIndex) {<br>
+    int pivotIndex = partition(nums, left, right);<br>
+    <br>
+    if (pivotIndex == targetIndex) {<br>
+        return nums[pivotIndex];<br>
+    } else if (pivotIndex < targetIndex) {<br>
+        return quickSelect(nums, pivotIndex + 1, right, targetIndex);<br>
+    } else {<br>
+        return quickSelect(nums, left, pivotIndex - 1, targetIndex);<br>
+    }<br>
+}<br>
+<br>
+private int partition(int[] nums, int left, int right) {<br>
+    int pivot = nums[right];<br>
+    int i = left;<br>
+    <br>
+    for (int j = left; j < right; j++) {<br>
+        if (nums[j] <= pivot) {<br>
+            swap(nums, i, j);<br>
+            i++;<br>
+        }<br>
+    }<br>
+    <br>
+    swap(nums, i, right);<br>
+    return i;<br>
+}</code></pre><br>
+<br>
+<h3>3. Find Median from Data Stream</h3><br>
+<br>
+**Problem:** Design a data structure that supports adding numbers and finding median efficiently.<br>
+<br>
+<pre><code>class MedianFinder {<br>
+    private PriorityQueue<Integer> maxHeap; // smaller half<br>
+    private PriorityQueue<Integer> minHeap; // larger half<br>
+    <br>
+    public MedianFinder() {<br>
+        maxHeap = new PriorityQueue<>(Collections.reverseOrder());<br>
+        minHeap = new PriorityQueue<>();<br>
+    }<br>
+    <br>
+    public void addNum(int num) {<br>
+        // Add to maxHeap first<br>
+        maxHeap.offer(num);<br>
+        <br>
+        // Ensure maxHeap.top <= minHeap.top<br>
+        minHeap.offer(maxHeap.poll());<br>
+        <br>
+        // Balance heaps (maxHeap can have at most 1 extra element)<br>
+        if (minHeap.size() > maxHeap.size()) {<br>
+            maxHeap.offer(minHeap.poll());<br>
+        }<br>
+    }<br>
+    <br>
+    public double findMedian() {<br>
+        if (maxHeap.size() > minHeap.size()) {<br>
+            return maxHeap.peek();<br>
+        } else {<br>
+            return (maxHeap.peek() + minHeap.peek()) / 2.0;<br>
+        }<br>
+    }<br>
+}</code></pre><br>
+<br>
+<h3>4. Merge K Sorted Lists</h3><br>
+<br>
+**Problem:** Merge k sorted linked lists and return it as one sorted list.<br>
+<br>
+**Example:**<br>
+<pre><code>Input: lists = [[1,4,5],[1,3,4],[2,6]]<br>
+Output: [1,1,2,3,4,4,5,6]</code></pre><br>
+<br>
+<pre><code>public ListNode mergeKLists(ListNode[] lists) {<br>
+    if (lists == null || lists.length == 0) return null;<br>
+    <br>
+    PriorityQueue<ListNode> minHeap = new PriorityQueue<>((a, b) -> a.val - b.val);<br>
+    <br>
+    // Add first node of each list to heap<br>
+    for (ListNode head : lists) {<br>
+        if (head != null) {<br>
+            minHeap.offer(head);<br>
+        }<br>
+    }<br>
+    <br>
+    ListNode dummy = new ListNode(0);<br>
+    ListNode current = dummy;<br>
+    <br>
+    while (!minHeap.isEmpty()) {<br>
+        ListNode smallest = minHeap.poll();<br>
+        current.next = smallest;<br>
+        current = current.next;<br>
+        <br>
+        if (smallest.next != null) {<br>
+            minHeap.offer(smallest.next);<br>
+        }<br>
+    }<br>
+    <br>
+    return dummy.next;<br>
+}</code></pre><br>
+<br>
+<h3>5. Task Scheduler</h3><br>
+<br>
+**Problem:** Given tasks and cooldown time, find minimum intervals needed.<br>
+<br>
+**Example:**<br>
+<pre><code>Input: tasks = ["A","A","A","B","B","B"], n = 2<br>
+Output: 8<br>
+Explanation: A -> B -> idle -> A -> B -> idle -> A -> B</code></pre><br>
+<br>
+<pre><code>public int leastInterval(char[] tasks, int n) {<br>
+    // Count task frequencies<br>
+    int[] frequencies = new int[26];<br>
+    for (char task : tasks) {<br>
+        frequencies[task - 'A']++;<br>
+    }<br>
+    <br>
+    // Use max-heap to track most frequent tasks<br>
+    PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());<br>
+    for (int freq : frequencies) {<br>
+        if (freq > 0) {<br>
+            maxHeap.offer(freq);<br>
+        }<br>
+    }<br>
+    <br>
+    int time = 0;<br>
+    Queue<int[]> cooldown = new LinkedList<>(); // [frequency, available_time]<br>
+    <br>
+    while (!maxHeap.isEmpty() || !cooldown.isEmpty()) {<br>
+        time++;<br>
+        <br>
+        // Add tasks back from cooldown<br>
+        if (!cooldown.isEmpty() && cooldown.peek()[1] == time) {<br>
+            maxHeap.offer(cooldown.poll()[0]);<br>
+        }<br>
+        <br>
+        // Execute most frequent task<br>
+        if (!maxHeap.isEmpty()) {<br>
+            int freq = maxHeap.poll() - 1;<br>
+            if (freq > 0) {<br>
+                cooldown.offer(new int[]{freq, time + n + 1});<br>
+            }<br>
+        }<br>
+    }<br>
+    <br>
+    return time;<br>
+}</code></pre><br>
+<br>
+<h2>Advanced Variations</h2><br>
+<br>
+<h3>Sliding Window Maximum</h3><br>
+<pre><code>public int[] maxSlidingWindow(int[] nums, int k) {<br>
+    if (nums == null || nums.length == 0) return new int[0];<br>
+    <br>
+    PriorityQueue<int[]> maxHeap = new PriorityQueue<>((a, b) -> b[0] - a[0]);<br>
+    int[] result = new int[nums.length - k + 1];<br>
+    <br>
+    for (int i = 0; i < nums.length; i++) {<br>
+        maxHeap.offer(new int[]{nums[i], i});<br>
+        <br>
+        // Remove elements outside window<br>
+        while (!maxHeap.isEmpty() && maxHeap.peek()[1] <= i - k) {<br>
+            maxHeap.poll();<br>
+        }<br>
+        <br>
+        // Record maximum for current window<br>
+        if (i >= k - 1) {<br>
+            result[i - k + 1] = maxHeap.peek()[0];<br>
+        }<br>
+    }<br>
+    <br>
+    return result;<br>
+}</code></pre><br>
+<br>
+<h3>K Closest Points to Origin</h3><br>
+<pre><code>public int[][] kClosest(int[][] points, int k) {<br>
+    PriorityQueue<int[]> maxHeap = new PriorityQueue<>((a, b) -> <br>
+        (b[0] * b[0] + b[1] * b[1]) - (a[0] * a[0] + a[1] * a[1]));<br>
+    <br>
+    for (int[] point : points) {<br>
+        maxHeap.offer(point);<br>
+        <br>
+        if (maxHeap.size() > k) {<br>
+            maxHeap.poll();<br>
+        }<br>
+    }<br>
+    <br>
+    int[][] result = new int[k][2];<br>
+    for (int i = k - 1; i >= 0; i--) {<br>
+        result[i] = maxHeap.poll();<br>
+    }<br>
+    <br>
+    return result;<br>
+}</code></pre><br>
+<br>
+<h3>Meeting Rooms II</h3><br>
+<pre><code>public int minMeetingRooms(int[][] intervals) {<br>
+    if (intervals == null || intervals.length == 0) return 0;<br>
+    <br>
+    Arrays.sort(intervals, (a, b) -> a[0] - b[0]);<br>
+    <br>
+    PriorityQueue<Integer> minHeap = new PriorityQueue<>();<br>
+    <br>
+    for (int[] interval : intervals) {<br>
+        // Remove meetings that have ended<br>
+        if (!minHeap.isEmpty() && minHeap.peek() <= interval[0]) {<br>
+            minHeap.poll();<br>
+        }<br>
+        <br>
+        minHeap.offer(interval[1]);<br>
+    }<br>
+    <br>
+    return minHeap.size();<br>
+}</code></pre><br>
+<br>
+<h2>Interview Tips</h2><br>
+<br>
+<h3>Pattern Recognition</h3><br>
+- **Top-K problems**: Use heap of size K to avoid sorting entire array<br>
+- **Streaming data**: Heaps maintain running maximum/minimum efficiently<br>
+- **Merge operations**: Priority queue orders elements from multiple sources<br>
+- **Scheduling problems**: Heaps track earliest available times/deadlines<br>
+<br>
+<h3>Common Mistakes</h3><br>
+- **Wrong heap type**: Using max-heap when min-heap is needed (or vice versa)<br>
+- **Heap size management**: Not maintaining fixed size for top-K problems<br>
+- **Comparator errors**: Incorrect custom comparison functions<br>
+- **Empty heap access**: Not checking if heap is empty before peek/poll<br>
+<br>
+<h3>Implementation Variations</h3><br>
+<pre><code>// Custom object in heap<br>
+class Task {<br>
+    String name;<br>
+    int priority;<br>
+    <br>
+    Task(String name, int priority) {<br>
+        this.name = name;<br>
+        this.priority = priority;<br>
+    }<br>
+}<br>
+<br>
+PriorityQueue<Task> taskQueue = new PriorityQueue<>((a, b) -> b.priority - a.priority);<br>
+<br>
+// Multiple criteria comparison<br>
+PriorityQueue<int[]> complexHeap = new PriorityQueue<>((a, b) -> {<br>
+    if (a[0] != b[0]) return a[0] - b[0]; // First by first element<br>
+    return a[1] - b[1]; // Then by second element<br>
+});<br>
+<br>
+// Lazy deletion for sliding window<br>
+Map<Integer, Integer> toRemove = new HashMap<>();<br>
+while (!maxHeap.isEmpty() && toRemove.containsKey(maxHeap.peek())) {<br>
+    int val = maxHeap.poll();<br>
+    toRemove.put(val, toRemove.get(val) - 1);<br>
+    if (toRemove.get(val) == 0) toRemove.remove(val);<br>
+}</code></pre><br>
+<br>
+<h2>Time & Space Complexity</h2><br>
+<br>
+| Operation | Time Complexity | Space Complexity | Notes |<br>
+|-----------|----------------|------------------|-------|<br>
+| Insert | O(log n) | O(1) | Single heap operation |<br>
+| Extract Min/Max | O(log n) | O(1) | Single heap operation |<br>
+| Peek | O(1) | O(1) | No modification |<br>
+| Top-K Elements | O(n log k) | O(k) | k-sized heap |<br>
+| Merge K Lists | O(n log k) | O(k) | k nodes in heap |<br>
+| Find Median (stream) | O(log n) | O(n) | Two heaps |<br>
+| Quick Select | O(n) average, O(n²) worst | O(1) | In-place partition |<br>
+<br>
+---<br>
+<br>
+[← Previous: Intervals](06_Intervals.md) | [Back to Main Guide](README.md) | [Next: Greedy Algorithms →](08_Greedy.md)<br>
+<br>
+---<br>
+<br>
+<h1>08. Greedy</h1><br>
+<br>
+<h2>Common Problem Patterns</h2><br>
+<h3>1. Gas Station Problem</h3><br>
+<br>
+**Problem:** There are n gas stations along a circular route. Determine if you can complete the circuit.<br>
+<br>
+**Example:**<br>
+<pre><code>Input: gas = [1,2,3,4,5], cost = [3,4,5,1,2]<br>
+Output: 3 (start at station 3)</code></pre><br>
+<br>
+<pre><code>public int canCompleteCircuit(int[] gas, int[] cost) {<br>
+    int totalGas = 0, totalCost = 0;<br>
+    int currentGas = 0, startStation = 0;<br>
+    <br>
+    for (int i = 0; i < gas.length; i++) {<br>
+        totalGas += gas[i];<br>
+        totalCost += cost[i];<br>
+        currentGas += gas[i] - cost[i];<br>
+        <br>
+        // If we can't reach next station, try starting from next station<br>
+        if (currentGas < 0) {<br>
+            startStation = i + 1;<br>
+            currentGas = 0;<br>
+        }<br>
+    }<br>
+    <br>
+    // Check if total gas is enough<br>
+    return totalGas >= totalCost ? startStation : -1;<br>
+}</code></pre><br>
+<br>
+<h3>2. Minimum Number of Arrows</h3><br>
+<br>
+**Problem:** Burst balloons with minimum arrows. Each balloon has start and end coordinates.<br>
+<br>
+**Example:**<br>
+<pre><code>Input: points = [[10,16],[2,8],[1,6],[7,12]]<br>
+Output: 2 (one arrow at [6,7] area, another at [12,16])</code></pre><br>
+<br>
+<pre><code>public int findMinArrowShots(int[][] points) {<br>
+    if (points.length == 0) return 0;<br>
+    <br>
+    // Sort by end coordinate<br>
+    Arrays.sort(points, (a, b) -> Integer.compare(a[1], b[1]));<br>
+    <br>
+    int arrows = 1;<br>
+    int arrowPosition = points[0][1];<br>
+    <br>
+    for (int i = 1; i < points.length; i++) {<br>
+        // If balloon starts after arrow position, need new arrow<br>
+        if (points[i][0] > arrowPosition) {<br>
+            arrows++;<br>
+            arrowPosition = points[i][1];<br>
+        }<br>
+    }<br>
+    <br>
+    return arrows;<br>
+}</code></pre><br>
+<br>
+<h3>3. Task Scheduler</h3><br>
+<br>
+**Problem:** Given tasks and cooldown time n, find minimum time to finish all tasks.<br>
+<br>
+**Example:**<br>
+<pre><code>Input: tasks = ["A","A","A","B","B","B"], n = 2<br>
+Output: 8<br>
+Explanation: A -> B -> idle -> A -> B -> idle -> A -> B</code></pre><br>
+<br>
+<pre><code>public int leastInterval(char[] tasks, int n) {<br>
+    // Count task frequencies<br>
+    int[] frequencies = new int[26];<br>
+    for (char task : tasks) {<br>
+        frequencies[task - 'A']++;<br>
+    }<br>
+    <br>
+    Arrays.sort(frequencies);<br>
+    <br>
+    // Most frequent task<br>
+    int maxFreq = frequencies[25];<br>
+    <br>
+    // Number of idle slots needed for most frequent task<br>
+    int idleSlots = (maxFreq - 1) * n;<br>
+    <br>
+    // Fill idle slots with other tasks<br>
+    for (int i = 24; i >= 0 && idleSlots > 0; i--) {<br>
+        idleSlots -= Math.min(frequencies[i], maxFreq - 1);<br>
+    }<br>
+    <br>
+    idleSlots = Math.max(0, idleSlots);<br>
+    <br>
+    return tasks.length + idleSlots;<br>
+}</code></pre><br>
+<br>
+<h3>4. Candy Distribution</h3><br>
+<br>
+**Problem:** Children sit in a line, each has a rating. Give candies such that higher-rated children get more than neighbors.<br>
+<br>
+**Example:**<br>
+<pre><code>Input: ratings = [1,0,2]<br>
+Output: 5<br>
+Explanation: Give [2,1,2] candies respectively.</code></pre><br>
+<br>
+<pre><code>public int candy(int[] ratings) {<br>
+    int n = ratings.length;<br>
+    int[] candies = new int[n];<br>
+    Arrays.fill(candies, 1); // Everyone gets at least 1 candy<br>
+    <br>
+    // Left to right: ensure right neighbor with higher rating gets more<br>
+    for (int i = 1; i < n; i++) {<br>
+        if (ratings[i] > ratings[i - 1]) {<br>
+            candies[i] = candies[i - 1] + 1;<br>
+        }<br>
+    }<br>
+    <br>
+    // Right to left: ensure left neighbor with higher rating gets more<br>
+    for (int i = n - 2; i >= 0; i--) {<br>
+        if (ratings[i] > ratings[i + 1]) {<br>
+            candies[i] = Math.max(candies[i], candies[i + 1] + 1);<br>
+        }<br>
+    }<br>
+    <br>
+    int totalCandies = 0;<br>
+    for (int candy : candies) {<br>
+        totalCandies += candy;<br>
+    }<br>
+    <br>
+    return totalCandies;<br>
+}</code></pre><br>
+<br>
+<h3>5. Remove K Digits</h3><br>
+<br>
+**Problem:** Remove k digits from number to make it smallest possible.<br>
+<br>
+**Example:**<br>
+<pre><code>Input: num = "1432219", k = 3<br>
+Output: "1219"</code></pre><br>
+<br>
+<pre><code>public String removeKdigits(String num, int k) {<br>
+    Stack<Character> stack = new Stack<>();<br>
+    <br>
+    for (char digit : num.toCharArray()) {<br>
+        // Remove larger digits from stack<br>
+        while (!stack.isEmpty() && k > 0 && stack.peek() > digit) {<br>
+            stack.pop();<br>
+            k--;<br>
+        }<br>
+        stack.push(digit);<br>
+    }<br>
+    <br>
+    // Remove remaining digits from end<br>
+    while (k > 0) {<br>
+        stack.pop();<br>
+        k--;<br>
+    }<br>
+    <br>
+    // Build result<br>
+    StringBuilder result = new StringBuilder();<br>
+    while (!stack.isEmpty()) {<br>
+        result.append(stack.pop());<br>
+    }<br>
+    result.reverse();<br>
+    <br>
+    // Remove leading zeros<br>
+    while (result.length() > 1 && result.charAt(0) == '0') {<br>
+        result.deleteCharAt(0);<br>
+    }<br>
+    <br>
+    return result.length() == 0 ? "0" : result.toString();<br>
+}</code></pre><br>
+<br>
+<h2>Advanced Variations</h2><br>
+<br>
+<h3>Minimum Spanning Tree (Kruskal's Algorithm)</h3><br>
+<pre><code>import java.util.*;<br>
+<br>
+public class KruskalMST {<br>
+    static class Edge implements Comparable<Edge> {<br>
+        int src, dest, weight;<br>
+        <br>
+        Edge(int src, int dest, int weight) {<br>
+            this.src = src;<br>
+            this.dest = dest;<br>
+            this.weight = weight;<br>
+        }<br>
+        <br>
+        @Override<br>
+        public int compareTo(Edge other) {<br>
+            return this.weight - other.weight;<br>
+        }<br>
+    }<br>
+    <br>
+    static class UnionFind {<br>
+        int[] parent, rank;<br>
+        <br>
+        UnionFind(int n) {<br>
+            parent = new int[n];<br>
+            rank = new int[n];<br>
+            for (int i = 0; i < n; i++) {<br>
+                parent[i] = i;<br>
+            }<br>
+        }<br>
+        <br>
+        int find(int x) {<br>
+            if (parent[x] != x) {<br>
+                parent[x] = find(parent[x]);<br>
+            }<br>
+            return parent[x];<br>
+        }<br>
+        <br>
+        boolean union(int x, int y) {<br>
+            int rootX = find(x);<br>
+            int rootY = find(y);<br>
+            <br>
+            if (rootX == rootY) return false;<br>
+            <br>
+            if (rank[rootX] < rank[rootY]) {<br>
+                parent[rootX] = rootY;<br>
+            } else if (rank[rootX] > rank[rootY]) {<br>
+                parent[rootY] = rootX;<br>
+            } else {<br>
+                parent[rootY] = rootX;<br>
+                rank[rootX]++;<br>
+            }<br>
+            <br>
+            return true;<br>
+        }<br>
+    }<br>
+    <br>
+    public static List<Edge> kruskalMST(List<Edge> edges, int vertices) {<br>
+        Collections.sort(edges); // Greedy: sort by weight<br>
+        <br>
+        UnionFind uf = new UnionFind(vertices);<br>
+        List<Edge> mst = new ArrayList<>();<br>
+        <br>
+        for (Edge edge : edges) {<br>
+            if (uf.union(edge.src, edge.dest)) {<br>
+                mst.add(edge);<br>
+                <br>
+                if (mst.size() == vertices - 1) break;<br>
+            }<br>
+        }<br>
+        <br>
+        return mst;<br>
+    }<br>
+}</code></pre><br>
+<br>
+<h3>Stock Buy Sell with Transaction Fee</h3><br>
+<pre><code>public class StockWithFee {<br>
+    <br>
+    /**<br>
+     * Best Time to Buy and Sell Stock with Transaction Fee<br>
+     */<br>
+    public int maxProfit(int[] prices, int fee) {<br>
+        int buy = -prices[0]; // Max profit when holding stock<br>
+        int sell = 0;         // Max profit when not holding stock<br>
+        <br>
+        for (int i = 1; i < prices.length; i++) {<br>
+            int prevBuy = buy;<br>
+            int prevSell = sell;<br>
+            <br>
+            // Either keep holding or buy today<br>
+            buy = Math.max(prevBuy, prevSell - prices[i]);<br>
+            <br>
+            // Either keep not holding or sell today (pay fee)<br>
+            sell = Math.max(prevSell, prevBuy + prices[i] - fee);<br>
+        }<br>
+        <br>
+        return sell;<br>
+    }<br>
+}</code></pre><br>
+<br>
+<h2>Interview Tips</h2><br>
+<br>
+<h3>Pattern Recognition</h3><br>
+- **Optimization problems**: Look for greedy choice property<br>
+- **Sorting first**: Many greedy algorithms require sorting input<br>
+- **Local optimum**: Each step makes locally best choice<br>
+- **No backtracking**: Once choice is made, never reconsider<br>
+<br>
+<h3>Common Mistakes</h3><br>
+- **Assuming greedy works**: Always verify greedy choice property<br>
+- **Wrong sorting criteria**: Choose correct parameter to sort by  <br>
+- **Missing edge cases**: Empty input, single element, all same values<br>
+- **Not proving optimality**: Greedy might give suboptimal results<br>
+<br>
+<h3>Implementation Variations</h3><br>
+<pre><code>// Template for interval problems<br>
+public static int greedyIntervals(int[][] intervals) {<br>
+    if (intervals.length == 0) return 0;<br>
+    <br>
+    // Sort by appropriate criteria (end time, start time, etc.)<br>
+    Arrays.sort(intervals, (a, b) -> a[1] - b[1]);<br>
+    <br>
+    int count = 1;<br>
+    int lastEnd = intervals[0][1];<br>
+    <br>
+    for (int i = 1; i < intervals.length; i++) {<br>
+        if (intervals[i][0] >= lastEnd) {<br>
+            count++;<br>
+            lastEnd = intervals[i][1];<br>
+        }<br>
+    }<br>
+    <br>
+    return count;<br>
+}<br>
+<br>
+// Template for choosing maximum/minimum<br>
+public static int greedyChoice(int[] nums) {<br>
+    Arrays.sort(nums); // Or custom sorting<br>
+    <br>
+    int result = 0;<br>
+    for (int i = 0; i < nums.length; i++) {<br>
+        // Make greedy choice based on problem<br>
+        if (/* condition */) {<br>
+            result += nums[i];<br>
+        }<br>
+    }<br>
+    <br>
+    return result;<br>
+}</code></pre><br>
+<br>
+<h2>Time & Space Complexity</h2><br>
+<br>
+| Algorithm | Time Complexity | Space Complexity | Notes |<br>
+|-----------|----------------|------------------|-------|<br>
+| Activity Selection | O(n log n) | O(1) | Sorting dominates |<br>
+| Fractional Knapsack | O(n log n) | O(1) | Sort by ratio |<br>
+| Huffman Coding | O(n log n) | O(n) | Priority queue operations |<br>
+| Jump Game | O(n) | O(1) | Single pass |<br>
+| Gas Station | O(n) | O(1) | Single pass |<br>
+| MST (Kruskal) | O(E log E) | O(V) | Sort edges, Union-Find |<br>
+| Task Scheduler | O(n) | O(1) | Counting sort |<br>
+<br>
+---<br>
+<br>
+[← Previous: Top-K & Heaps](07_TopK_Heaps.md) | [Back to Main Guide](README.md) | [Next: Dynamic Programming →](09_Dynamic_Programming.md)<br>
+<br>
+---<br>
+<br>
+<h1>16. Flow Algorithms</h1><br>
+<br>
+<h2>Common Problem Patterns</h2><br>
+<h3>1. Bipartite Matching</h3><br>
+<br>
+**Problem:** Given a bipartite graph, find the maximum matching.<br>
+<br>
+<pre><code>public int maxBipartiteMatching(int[][] graph) {<br>
+    int n = graph.length;<br>
+    int m = graph[0].length;<br>
+    <br>
+    MaxFlow flow = new MaxFlow(n + m + 2);<br>
+    int source = n + m;<br>
+    int sink = n + m + 1;<br>
+    <br>
+    // Connect source to left nodes<br>
+    for (int i = 0; i < n; i++) {<br>
+        flow.addEdge(source, i, 1);<br>
+    }<br>
+    <br>
+    // Connect right nodes to sink<br>
+    for (int j = 0; j < m; j++) {<br>
+        flow.addEdge(n + j, sink, 1);<br>
+    }<br>
+    <br>
+    // Connect left to right based on graph<br>
+    for (int i = 0; i < n; i++) {<br>
+        for (int j = 0; j < m; j++) {<br>
+            if (graph[i][j] == 1) {<br>
+                flow.addEdge(i, n + j, 1);<br>
+            }<br>
+        }<br>
+    }<br>
+    <br>
+    return flow.maxFlow(source, sink);<br>
+}</code></pre><br>
+<br>
+<h3>2. Min-Cut Problem</h3><br>
+<br>
+**Problem:** Find the minimum cut that separates source from sink.<br>
+<br>
+<pre><code>public List<List<Integer>> minCut(int source, int sink) {<br>
+    int maxFlowValue = maxFlow(source, sink);<br>
+    <br>
+    // Run BFS from source on residual graph<br>
+    boolean[] reachable = new boolean[n];<br>
+    Queue<Integer> queue = new LinkedList<>();<br>
+    queue.offer(source);<br>
+    reachable[source] = true;<br>
+    <br>
+    while (!queue.isEmpty()) {<br>
+        int u = queue.poll();<br>
+        <br>
+        for (Edge edge : graph.get(u)) {<br>
+            if (!reachable[edge.to] && edge.residualCapacity() > 0) {<br>
+                reachable[edge.to] = true;<br>
+                queue.offer(edge.to);<br>
+            }<br>
+        }<br>
+    }<br>
+    <br>
+    // Find cut edges<br>
+    List<List<Integer>> cutEdges = new ArrayList<>();<br>
+    for (int u = 0; u < n; u++) {<br>
+        if (reachable[u]) {<br>
+            for (Edge edge : graph.get(u)) {<br>
+                if (!reachable[edge.to] && edge.capacity > 0) {<br>
+                    cutEdges.add(Arrays.asList(u, edge.to));<br>
+                }<br>
+            }<br>
+        }<br>
+    }<br>
+    <br>
+    return cutEdges;<br>
+}</code></pre><br>
+<br>
+<h3>3. Project Selection Problem</h3><br>
+<br>
+**Problem:** Given projects with profits and dependencies, maximize total profit.<br>
+<br>
+<pre><code>public int maxProfit(int[] profits, int[][] dependencies) {<br>
+    int n = profits.length;<br>
+    MaxFlow flow = new MaxFlow(n + 2);<br>
+    int source = n;<br>
+    int sink = n + 1;<br>
+    <br>
+    int totalPositive = 0;<br>
+    <br>
+    for (int i = 0; i < n; i++) {<br>
+        if (profits[i] > 0) {<br>
+            flow.addEdge(source, i, profits[i]);<br>
+            totalPositive += profits[i];<br>
+        } else {<br>
+            flow.addEdge(i, sink, -profits[i]);<br>
+        }<br>
+    }<br>
+    <br>
+    // Add dependency edges with infinite capacity<br>
+    for (int[] dep : dependencies) {<br>
+        int from = dep[0], to = dep[1];<br>
+        flow.addEdge(from, to, Integer.MAX_VALUE);<br>
+    }<br>
+    <br>
+    return totalPositive - flow.maxFlow(source, sink);<br>
+}</code></pre><br>
+<br>
+<h3>4. Network Reliability</h3><br>
+<br>
+**Problem:** Find edge-connectivity of a network.<br>
+<br>
+<pre><code>public int edgeConnectivity(int[][] graph) {<br>
+    int n = graph.length;<br>
+    int minCut = Integer.MAX_VALUE;<br>
+    <br>
+    // Try all pairs of vertices as source and sink<br>
+    for (int sink = 1; sink < n; sink++) {<br>
+        MaxFlow flow = new MaxFlow(n);<br>
+        <br>
+        // Add edges from adjacency matrix<br>
+        for (int i = 0; i < n; i++) {<br>
+            for (int j = 0; j < n; j++) {<br>
+                if (graph[i][j] > 0) {<br>
+                    flow.addEdge(i, j, graph[i][j]);<br>
+                }<br>
+            }<br>
+        }<br>
+        <br>
+        int cut = flow.maxFlow(0, sink);<br>
+        minCut = Math.min(minCut, cut);<br>
+    }<br>
+    <br>
+    return minCut;<br>
+}</code></pre><br>
+<br>
+<h2>Advanced Variations</h2><br>
+<br>
+<h3>Push-Relabel Algorithm</h3><br>
+<pre><code>public class PushRelabel {<br>
+    private int[] height, excess;<br>
+    private List<List<Edge>> graph;<br>
+    private Queue<Integer> activeVertices;<br>
+    <br>
+    public int maxFlow(int source, int sink) {<br>
+        initialize(source);<br>
+        <br>
+        while (!activeVertices.isEmpty()) {<br>
+            int u = activeVertices.poll();<br>
+            <br>
+            if (u != source && u != sink && excess[u] > 0) {<br>
+                if (!push(u)) {<br>
+                    relabel(u);<br>
+                    activeVertices.offer(u);<br>
+                }<br>
+            }<br>
+        }<br>
+        <br>
+        return excess[sink];<br>
+    }<br>
+    <br>
+    private boolean push(int u) {<br>
+        for (Edge edge : graph.get(u)) {<br>
+            if (edge.residualCapacity() > 0 && height[u] == height[edge.to] + 1) {<br>
+                int pushFlow = Math.min(excess[u], edge.residualCapacity());<br>
+                <br>
+                edge.flow += pushFlow;<br>
+                excess[u] -= pushFlow;<br>
+                excess[edge.to] += pushFlow;<br>
+                <br>
+                if (excess[edge.to] == pushFlow && edge.to != source) {<br>
+                    activeVertices.offer(edge.to);<br>
+                }<br>
+                <br>
+                return excess[u] == 0;<br>
+            }<br>
+        }<br>
+        return false;<br>
+    }<br>
+    <br>
+    private void relabel(int u) {<br>
+        int minHeight = Integer.MAX_VALUE;<br>
+        <br>
+        for (Edge edge : graph.get(u)) {<br>
+            if (edge.residualCapacity() > 0) {<br>
+                minHeight = Math.min(minHeight, height[edge.to]);<br>
+            }<br>
+        }<br>
+        <br>
+        height[u] = minHeight + 1;<br>
+    }<br>
+}</code></pre><br>
+<br>
+<h2>Interview Tips</h2><br>
+<br>
+<h3>Pattern Recognition</h3><br>
+- **Maximum flow problems**: Network capacity, resource allocation<br>
+- **Minimum cut problems**: Bottleneck identification, network vulnerability<br>
+- **Bipartite matching**: Assignment problems, stable marriages<br>
+- **Project selection**: Profit maximization with constraints<br>
+<br>
+<h3>Common Mistakes</h3><br>
+- **Forgetting reverse edges**: Essential for residual graph construction<br>
+- **Wrong termination condition**: Must check for augmenting paths correctly<br>
+- **Capacity overflow**: Use appropriate data types for large capacities<br>
+- **Not handling disconnected components**: Verify graph connectivity<br>
+<br>
+<h3>Implementation Variations</h3><br>
+<pre><code>// Template for flow network construction<br>
+class FlowNetwork {<br>
+    void addBidirectionalEdge(int u, int v, int capacity) {<br>
+        addEdge(u, v, capacity);<br>
+        addEdge(v, u, capacity);<br>
+    }<br>
+    <br>
+    void addDirectionalEdge(int u, int v, int capacity) {<br>
+        addEdge(u, v, capacity);<br>
+        addEdge(v, u, 0); // Reverse edge with 0 capacity<br>
+    }<br>
+}<br>
+<br>
+// Template for multiple sources/sinks<br>
+void addSuperSource(int[] sources, int superSource) {<br>
+    for (int source : sources) {<br>
+        addEdge(superSource, source, Integer.MAX_VALUE);<br>
+    }<br>
+}</code></pre><br>
+<br>
+<h2>Time & Space Complexity</h2><br>
+<br>
+| Algorithm | Time Complexity | Space Complexity | Notes |<br>
+|-----------|----------------|------------------|-------|<br>
+| Ford-Fulkerson | O(E × f) | O(V + E) | f = max flow value |<br>
+| Edmonds-Karp | O(V × E²) | O(V²) | Always polynomial |<br>
+| Dinic's | O(V² × E) | O(V + E) | Better for unit capacities |<br>
+| Push-Relabel | O(V² × E) | O(V + E) | Good for dense graphs |<br>
+<br>
+---<br>
+<br>
+[← Previous: Java Data Structures](15_Java_DataStructures.md) | [Back to Main Guide](README.md) | [Next: Main Guide →](README.md)<br>
+<br>
+---<br>
+<br>
+
+</body>
+</html>

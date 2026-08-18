@@ -1,0 +1,1768 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Theory Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50;
+            margin-top: 2em;
+            margin-bottom: 1em;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid #e74c3c; padding-bottom: 8px; }
+        h3 { font-size: 1.5em; color: #e67e22; }
+        
+        code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 2px 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            line-height: 1.45;
+        }
+        
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            border-radius: 0;
+        }
+        
+        blockquote {
+            border-left: 4px solid #3498db;
+            background-color: #ecf0f1;
+            padding: 15px 20px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+        
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        @media print {
+            body { font-size: 12px; }
+            h1 { font-size: 20px; }
+            h2 { font-size: 16px; }
+            h3 { font-size: 14px; }
+            pre { font-size: 10px; }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+</head>
+<body>
+<h1>Algorithm Interview Reference — Theory Guide</h1><br>
+*Core Algorithms, Data Structures, and Implementation Techniques*<br>
+**Generated on:** January 06, 2026<br>
+**Content:** 16 comprehensive algorithm theory guides with implementations, optimizations, and complexity analysis<br>
+---<br>
+<br>
+---<br>
+<br>
+<blockquote>**→ Key Idea**: Efficiently track connected components and detect cycles in undirected graphs using path compression and union by rank for nearly constant time operations.</blockquote><br>
+<br>
+<blockquote>**• When to use**: Detect cycles in undirected graphs, find connected components, dynamic connectivity queries, Kruskal's MST algorithm</blockquote><br>
+<br>
+<blockquote>**⊕ Complexity**: Time O(α(n)) per operation with optimizations, Space O(n)</blockquote><br>
+<br>
+<blockquote>**⚠ Common Pitfall**: Forgetting path compression leads to O(n) per operation instead of O(α(n))</blockquote><br>
+<br>
+<h2>Overview</h2><br>
+<br>
+<br>
+<h2>Visual Example</h2><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<h3>Union-Find Tree Evolution</h3><br>
+<br>
+<div class="mermaid"><br>
+graph TD<br>
+    subgraph "A. Disconnected Set"<br>
+        0((0))<br>
+        1((1))<br>
+        2((2))<br>
+        3((3))<br>
+        4((4))<br>
+    end<br>
+<br>
+    subgraph "B. After Union(1,0) & Union(3,2)"<br>
+        1 --> 0<br>
+        3 --> 2<br>
+        4<br>
+    end<br>
+<br>
+    subgraph "C. Union(2,0) -> 0 is Root"<br>
+        2 --> 0<br>
+        1 --> 0<br>
+        3 --> 2<br>
+        4<br>
+    end<br>
+<br>
+    style 0 fill:#bbdefb,stroke:#1565c0,stroke-width:2px<br>
+    style 1 fill:#e3f2fd,stroke:#1565c0<br>
+    style 2 fill:#e3f2fd,stroke:#1565c0<br>
+    style 3 fill:#e3f2fd,stroke:#1565c0<br>
+    style 4 fill:#e3f2fd,stroke:#1565c0<br>
+</div><br>
+<br>
+<h3>Path Compression Effect</h3><br>
+<br>
+<div class="mermaid"><br>
+graph TD<br>
+    subgraph "Before Find(3)"<br>
+        A((3)) --> B((2))<br>
+        B --> C((1))<br>
+        C --> Root((0))<br>
+    end<br>
+<br>
+    subgraph "After Find(3) with Compression"<br>
+        D((3)) --> NewRoot((0))<br>
+        E((2)) --> NewRoot<br>
+        F((1)) --> NewRoot<br>
+    end<br>
+<br>
+    style Root fill:#ffccbc,stroke:#d84315<br>
+    style NewRoot fill:#ffccbc,stroke:#d84315<br>
+</div><br>
+<br>
+<br>
+<h2>Core Implementation</h2><br>
+<br>
+<pre><code>public class UnionFind {<br>
+    private int[] parent, rank;<br>
+    private int count; // Number of connected components<br>
+<br>
+    public UnionFind(int n) {<br>
+        parent = new int[n];<br>
+        rank = new int[n];<br>
+        count = n;<br>
+        <br>
+        // Initialize: each node is its own parent<br>
+        for (int i = 0; i < n; i++) {<br>
+            parent[i] = i;<br>
+            rank[i] = 0;<br>
+        }<br>
+    }<br>
+<br>
+    /**<br>
+     * Find the root of the set containing element i<br>
+     * Uses path compression for optimization<br>
+     */<br>
+    public int find(int i) {<br>
+        if (parent[i] != i) {<br>
+            parent[i] = find(parent[i]); // Path compression<br>
+        }<br>
+        return parent[i];<br>
+    }<br>
+<br>
+    /**<br>
+     * Union two sets containing elements i and j<br>
+     * Uses union by rank for balanced trees<br>
+     */<br>
+    public void union(int i, int j) {<br>
+        int rootI = find(i);<br>
+        int rootJ = find(j);<br>
+        <br>
+        if (rootI != rootJ) {<br>
+            // Union by rank: attach smaller tree under root of deeper tree<br>
+            if (rank[rootI] > rank[rootJ]) {<br>
+                parent[rootJ] = rootI;<br>
+            } else if (rank[rootI] < rank[rootJ]) {<br>
+                parent[rootI] = rootJ;<br>
+            } else {<br>
+                parent[rootJ] = rootI;<br>
+                rank[rootI]++; // Increase rank when trees have same height<br>
+            }<br>
+            count--; // Decrease number of connected components<br>
+        }<br>
+    }<br>
+<br>
+    /**<br>
+     * Check if two elements are in the same set<br>
+     */<br>
+    public boolean connected(int i, int j) { <br>
+        return find(i) == find(j); <br>
+    }<br>
+    <br>
+    /**<br>
+     * Get number of disjoint sets<br>
+     */<br>
+    public int getCount() { <br>
+        return count;<br>
+    }<br>
+}</code></pre><br>
+<br>
+<h2>Key Optimizations</h2><br>
+<br>
+<h3>1. Path Compression</h3><br>
+<pre><code>// Without path compression (slow)<br>
+public int findSlow(int i) {<br>
+    while (parent[i] != i) {<br>
+        i = parent[i];<br>
+    }<br>
+    return i;<br>
+}<br>
+<br>
+// With path compression (fast)<br>
+public int find(int i) {<br>
+    if (parent[i] != i) {<br>
+        parent[i] = find(parent[i]); // Compress path<br>
+    }<br>
+    return parent[i];<br>
+}</code></pre><br>
+<br>
+<h3>2. Union by Rank</h3><br>
+<pre><code>// Without union by rank (can create tall trees)<br>
+public void unionSlow(int i, int j) {<br>
+    int rootI = find(i);<br>
+    int rootJ = find(j);<br>
+    if (rootI != rootJ) {<br>
+        parent[rootJ] = rootI; // Always attach j to i<br>
+    }<br>
+}<br>
+<br>
+// With union by rank (balanced trees)<br>
+public void union(int i, int j) {<br>
+    int rootI = find(i);<br>
+    int rootJ = find(j);<br>
+    if (rootI != rootJ) {<br>
+        if (rank[rootI] > rank[rootJ]) {<br>
+            parent[rootJ] = rootI;<br>
+        } else if (rank[rootI] < rank[rootJ]) {<br>
+            parent[rootI] = rootJ;<br>
+        } else {<br>
+            parent[rootJ] = rootI;<br>
+            rank[rootI]++;<br>
+        }<br>
+    }<br>
+}</code></pre><br>
+<br>
+---<br>
+<br>
+<blockquote>**→ Key Idea**: Search sorted array by repeatedly dividing search space in half</blockquote><br>
+<br>
+<blockquote>**• When to use**: Sorted arrays, search spaces, optimization problems, finding boundaries</blockquote><br>
+<br>
+<blockquote>**⊕ Complexity**: Time O(log n), Space O(1)</blockquote><br>
+<br>
+<blockquote>**⚠ Common Pitfall**: Use <code>mid = left + (right - left) / 2</code> to avoid integer overflow</blockquote><br>
+<br>
+<h2>Overview</h2><br>
+<br>
+<br>
+<h2>Visual Example</h2><br>
+<br>
+<h3>Binary Search Process</h3><br>
+<pre><code>Array: [1, 3, 5, 7, 9, 11, 13, 15, 17, 19]  Target: 7<br>
+Step 1: [1, 3, 5, 7, 9, |11|, 13, 15, 17, 19]  mid=11 > 7, go left<br>
+Step 2: [1, 3, |5|, 7, 9] 11, 13, 15, 17, 19   mid=5 < 7, go right  <br>
+Step 3:  1, 3, 5, |7|, 9  11, 13, 15, 17, 19   mid=7 = 7, FOUND!<br>
+<br>
+>> Each step eliminates half the search space: 10 → 5 → 2 → 1</code></pre><br>
+<br>
+<h3>Search Space Visualization</h3><br>
+<pre><code>Lower Bound vs Upper Bound:<br>
+<br>
+Array: [2, 2, 2, 5, 5, 8, 8, 8, 8]  Target: 5<br>
+<br>
+Lower Bound (first ≥ target):    Upper Bound (first > target):<br>
+[2, 2, 2, |5, 5|, 8, 8, 8, 8]   [2, 2, 2, 5, 5, |8|, 8, 8, 8]<br>
+         ↑                                    ↑<br>
+      index 3                             index 5<br>
+<br>
+Range of target 5: [3, 4]</code></pre><br>
+<br>
+<br>
+Binary search is a search algorithm that finds the position of a target value within a sorted array. It compares the target value to the middle element and eliminates half of the array from consideration.<br>
+<br>
+The key insight is that by comparing the target with the middle element, we can determine which half of the array to search next, effectively halving the search space in each iteration.<br>
+<br>
+<h2>Core Implementation</h2><br>
+<br>
+<h3>Standard Binary Search</h3><br>
+<br>
+<pre><code>public int binarySearch(int[] nums, int target) {<br>
+    int left = 0, right = nums.length - 1;<br>
+    <br>
+    while (left <= right) {<br>
+        int mid = left + (right - left) / 2; // Avoid overflow<br>
+        <br>
+        if (nums[mid] == target) {<br>
+            return mid; // Target found<br>
+        } else if (nums[mid] < target) {<br>
+            left = mid + 1; // Target is in right half<br>
+        } else {<br>
+            right = mid - 1; // Target is in left half<br>
+        }<br>
+    }<br>
+    <br>
+    return -1; // Target not found<br>
+}</code></pre><br>
+<br>
+---<br>
+<br>
+<blockquote>**→ Key Idea**: Use two pointers moving towards each other or in same direction to solve array problems efficiently</blockquote><br>
+<br>
+<blockquote>**• When to use**: Sorted arrays, finding pairs, removing duplicates, palindromes, sliding patterns</blockquote><br>
+<br>
+<blockquote>**⊕ Complexity**: Time O(n), Space O(1)</blockquote><br>
+<br>
+<blockquote>**⚠ Common Pitfall**: Not handling edge cases like empty arrays or single elements</blockquote><br>
+<br>
+<h2>Overview</h2><br>
+<br>
+<br>
+<h2>Visual Example</h2><br>
+<br>
+<h3>Two Pointers Technique</h3><br>
+<pre><code>Target Sum Problem: Find pair that sums to 9<br>
+Array: [1, 3, 4, 6, 8, 9, 11]<br>
+<br>
+Step 1: left=0, right=6<br>
+[1, 3, 4, 6, 8, 9, 11]    1 + 11 = 12 > 9, move right pointer left<br>
+ ↑                 ↑<br>
+<br>
+Step 2: left=0, right=5  <br>
+[1, 3, 4, 6, 8, 9, 11]    1 + 9 = 10 > 9, move right pointer left<br>
+ ↑              ↑<br>
+<br>
+Step 3: left=0, right=4<br>
+[1, 3, 4, 6, 8, 9, 11]    1 + 8 = 9 ✓ FOUND!<br>
+ ↑           ↑<br>
+<br>
+⚡ O(n) solution vs O(n²) brute force</code></pre><br>
+<br>
+<h3>Fast & Slow Pointers (Cycle Detection)</h3><br>
+<pre><code>Linked List with Cycle:<br>
+1 → 2 → 3 → 4 → 5<br>
+    ↑           ↓<br>
+    8 ← 7 ← 6 ←<br>
+<br>
+Step 1: slow=1, fast=2     Step 2: slow=2, fast=4     Step 3: slow=3, fast=6<br>
+Step 4: slow=4, fast=8     Step 5: slow=5, fast=3     Step 6: slow=6, fast=7<br>
+Step 7: slow=7, fast=5     Step 8: slow=8, fast=2     Step 9: slow=2, fast=6<br>
+<br>
+>> When slow == fast, cycle detected!</code></pre><br>
+<br>
+<br>
+The two-pointer technique uses two pointers that traverse the data structure in a coordinated way. The pointers can move toward each other (opposite direction) or in the same direction at different speeds.<br>
+<br>
+This technique is particularly powerful because it often reduces time complexity from O(n²) to O(n) while maintaining O(1) space complexity.<br>
+<br>
+<h2>Interview Tips</h2><br>
+<br>
+<h3>Pattern Recognition</h3><br>
+- When to identify this technique in problem statements<br>
+- Key indicators and problem characteristics<br>
+- Similar problem types and variations<br>
+<br>
+<h3>Common Mistakes</h3><br>
+- Implementation pitfalls to avoid<br>
+- Edge cases that are often missed<br>
+- Performance considerations<br>
+<br>
+<h3>Implementation Variations</h3><br>
+<pre><code>// Alternative approaches and optimizations<br>
+// Template code for common variations</code></pre><br>
+<br>
+<h2>Time & Space Complexity</h2><br>
+<br>
+| Pattern | Time Complexity | Space Complexity |<br>
+|---------|----------------|------------------|<br>
+| Two Sum (sorted) | O(n) | O(1) |<br>
+| Three Sum | O(n²) | O(1) |<br>
+| Cycle Detection | O(n) | O(1) |<br>
+| Array Partitioning | O(n) | O(1) |<br>
+| Container Water | O(n) | O(1) |<br>
+<br>
+The two-pointer technique typically achieves linear time complexity with constant space, making it highly efficient for interview problems.<br>
+<br>
+---<br>
+<br>
+[← Previous: Binary Search](02_Binary_Search.md) | [Back to Main Guide](README.md) | [Next: Sliding Window →](04_Sliding_Window.md)<br>
+<br>
+---<br>
+<br>
+<blockquote>**→ Key Idea**: Use a window that slides over array to track subset properties efficiently</blockquote><br>
+<br>
+<blockquote>**• When to use**: Subarray problems, substring problems, fixed/variable window size optimization</blockquote><br>
+<br>
+<blockquote>**⊕ Complexity**: Time O(n), Space O(k) where k is window constraint</blockquote><br>
+<br>
+<blockquote>**⚠ Common Pitfall**: Not properly updating window state when sliding or expanding/contracting</blockquote><br>
+<br>
+<h2>Overview</h2><br>
+<br>
+<br>
+<h2>Visual Example</h2><br>
+<br>
+<h3>Fixed Size Sliding Window</h3><br>
+<pre><code>Find maximum sum subarray of size 3:<br>
+Array: [2, 1, 5, 1, 3, 2]<br>
+<br>
+Window 1: [2, 1, 5] | 1, 3, 2    Sum = 8<br>
+Window 2:  2, [1, 5, 1] | 3, 2    Sum = 7  <br>
+Window 3:  2, 1, [5, 1, 3] | 2    Sum = 9  ← Maximum<br>
+Window 4:  2, 1, 5, [1, 3, 2]     Sum = 6<br>
+<br>
+🪟 Slide window one position at each step</code></pre><br>
+<br>
+<h3>Variable Size Sliding Window  </h3><br>
+<pre><code>Longest substring with at most 2 distinct characters:<br>
+String: "eceba"<br>
+<br>
+Step 1: [e]           distinct=1 ≤ 2 ✓, expand<br>
+Step 2: [ec]          distinct=2 ≤ 2 ✓, expand  <br>
+Step 3: [ece]         distinct=2 ≤ 2 ✓, expand<br>
+Step 4: [eceb]        distinct=3 > 2 ✗, shrink<br>
+Step 5:  e[ceb]       distinct=3 > 2 ✗, shrink  <br>
+Step 6:  ec[eb]       distinct=2 ≤ 2 ✓, expand<br>
+Step 7:  ec[eba]      distinct=3 > 2 ✗, done<br>
+<br>
+>> Best window: "ece" (length 3)</code></pre><br>
+<br>
+<h3>Timeline Visualization</h3><br>
+<pre><code>Time:    0----1----2----3----4----5----6<br>
+Window:  [----][----][----][----]<br>
+Action:   add   add   add   rem   add   add<br>
+State:    1     2     3     2     3     4<br>
+<br>
+>> Window expands/contracts based on constraints</code></pre><br>
+<br>
+<br>
+The sliding window technique involves maintaining a "window" of elements and sliding it across the data structure to find subarrays/substrings that satisfy certain conditions.<br>
+<br>
+This technique is particularly powerful for optimization problems on contiguous sequences, often reducing time complexity from O(n²) to O(n).<br>
+<br>
+<h2>Interview Tips</h2><br>
+<br>
+<h3>Pattern Recognition</h3><br>
+- When to identify this technique in problem statements<br>
+- Key indicators and problem characteristics<br>
+- Similar problem types and variations<br>
+<br>
+<h3>Common Mistakes</h3><br>
+- Implementation pitfalls to avoid<br>
+- Edge cases that are often missed<br>
+- Performance considerations<br>
+<br>
+<h3>Implementation Variations</h3><br>
+<pre><code>// Alternative approaches and optimizations<br>
+// Template code for common variations</code></pre><br>
+<br>
+<h2>Time & Space Complexity</h2><br>
+<br>
+| Pattern | Time Complexity | Space Complexity |<br>
+|---------|----------------|------------------|<br>
+| Fixed Window | O(n) | O(1) |<br>
+| Variable Window | O(n) | O(k) where k is unique elements |<br>
+| Character Frequency | O(n) | O(1) or O(alphabet size) |<br>
+| Sliding Window Maximum | O(n) | O(k) |<br>
+<br>
+The sliding window technique typically achieves linear time complexity, making it highly efficient for subarray/substring optimization problems.<br>
+<br>
+---<br>
+<br>
+[← Previous: Two Pointers](03_Two_Pointers.md) | [Back to Main Guide](README.md) | [Next: Monotonic Stack →](05_Monotonic_Stack.md)<br>
+<br>
+---<br>
+<br>
+<blockquote>**→ Key Idea**: Use stack that maintains elements in monotonic order to find next/previous greater/smaller elements</blockquote><br>
+<br>
+<blockquote>**• When to use**: Next greater element, histogram problems, temperature problems, expression evaluation</blockquote><br>
+<br>
+<blockquote>**⊕ Complexity**: Time O(n), Space O(n)</blockquote><br>
+<br>
+<blockquote>**⚠ Common Pitfall**: Not handling empty stack or maintaining wrong monotonic order</blockquote><br>
+<br>
+<h2>Overview</h2><br>
+<br>
+<br>
+<h2>Visual Example</h2><br>
+<br>
+<h3>Monotonic Stack Operations</h3><br>
+<pre><code>Next Greater Element: [2, 1, 2, 4, 3, 1]<br>
+<br>
+Step 1: Process 2        Step 2: Process 1        Step 3: Process 2<br>
+Stack: [2]              Stack: [2, 1]           Stack: [2]  <br>
+                                                NGE[1] = 2<br>
+<br>
+Step 4: Process 4        Step 5: Process 3        Step 6: Process 1<br>
+Stack: []               Stack: [4, 3]           Stack: [4, 3, 1]<br>
+NGE[2] = 4                                      <br>
+NGE[2] = 4              <br>
+<br>
+Final Result: [4, 2, 4, -1, -1, -1]<br>
+<br>
+>> Stack maintains decreasing order, pops when greater element found</code></pre><br>
+<br>
+<h3>Stack State Evolution</h3><br>
+<pre><code>Input:  [2, 1, 2, 4, 3, 1]<br>
+        ↓<br>
+<br>
+Step by step:<br>
+|     |    |     |    |  2  |    |  4  |    |  4  |    |  4  |<br>
+|     | -> |  2  | -> |  1  | -> |     | -> |  3  | -> |  3  |<br>
+|     |    |  1  |    |     |    |     |    |     |    |  1  |<br>
++-----+    +-----+    +-----+    +-----+    +-----+    +-----+<br>
+  Empty      Add 2     Add 1     Pop all    Add 3,4    Add 1<br>
+<br>
+>> Monotonic decreasing stack for Next Greater Element</code></pre><br>
+<br>
+<h3>Histogram Area Calculation</h3><br>
+<pre><code>Heights: [2, 1, 5, 6, 2, 3]<br>
+<br>
+Visual representation:<br>
+    ██<br>
+    ██<br>
+██  ██    ██<br>
+██  ██ ██ ██<br>
+██ ██████ ██<br>
+<br>
+Largest rectangle: Height 5, Width 2 → Area = 10<br>
+<br>
+Stack helps find left and right boundaries efficiently</code></pre><br>
+<br>
+<br>
+A monotonic stack maintains elements in monotonic order (either strictly increasing or decreasing). It's used to solve problems that require finding the next or previous greater/smaller element efficiently.<br>
+<br>
+The key insight is that when we encounter an element that violates the monotonic property, we can process all elements in the stack that are smaller/larger before adding the current element.<br>
+<br>
+<h2>Interview Tips</h2><br>
+<br>
+<h3>Pattern Recognition</h3><br>
+- When to identify this technique in problem statements<br>
+- Key indicators and problem characteristics<br>
+- Similar problem types and variations<br>
+<br>
+<h3>Common Mistakes</h3><br>
+- Implementation pitfalls to avoid<br>
+- Edge cases that are often missed<br>
+- Performance considerations<br>
+<br>
+<h3>Implementation Variations</h3><br>
+<pre><code>// Alternative approaches and optimizations<br>
+// Template code for common variations</code></pre><br>
+<br>
+<h2>Time & Space Complexity</h2><br>
+<br>
+| Problem Type | Time Complexity | Space Complexity |<br>
+|-------------|----------------|------------------|<br>
+| Next/Previous Element | O(n) | O(n) |<br>
+| Daily Temperatures | O(n) | O(n) |<br>
+| Histogram | O(n) | O(n) |<br>
+| Expression Evaluation | O(n) | O(n) |<br>
+<br>
+Each element is pushed and popped at most once, giving O(n) amortized time complexity.<br>
+<br>
+---<br>
+<br>
+[← Previous: Sliding Window](04_Sliding_Window.md) | [Back to Main Guide](README.md) | [Next: Intervals →](06_Intervals.md)<br>
+<br>
+---<br>
+<br>
+<blockquote>**→ Key Idea**: Sort intervals and merge overlapping ones to solve scheduling and range problems</blockquote><br>
+<br>
+<blockquote>**• When to use**: Meeting rooms, scheduling conflicts, range merging, calendar problems</blockquote><br>
+<br>
+<blockquote>**⊕ Complexity**: Time O(n log n) for sorting, Space O(n)</blockquote><br>
+<br>
+<blockquote>**⚠ Common Pitfall**: Not sorting intervals first or incorrect overlap detection logic</blockquote><br>
+<br>
+<h2>Overview</h2><br>
+<br>
+<br>
+<h2>Visual Example</h2><br>
+<br>
+<h3>Interval Merging Process</h3><br>
+<pre><code>Input intervals: [[1,3], [2,6], [8,10], [15,18]]<br>
+<br>
+Step 1: Sort by start time (already sorted)<br>
+[1,3] [2,6] [8,10] [15,18]<br>
+<br>
+Step 2: Merge overlapping intervals<br>
+[1,3] overlaps with [2,6] → merge to [1,6]<br>
+[1,6] no overlap with [8,10] → keep separate  <br>
+[8,10] no overlap with [15,18] → keep separate<br>
+<br>
+Result: [[1,6], [8,10], [15,18]]<br>
+<br>
+Timeline visualization:<br>
+1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18<br>
+[─────────────────]                  [─────────]                [─────────────]<br>
+    Merged                              Kept                       Kept</code></pre><br>
+<br>
+<h3>Meeting Room Scheduling</h3><br>
+<pre><code>Meeting times: [(0,30), (5,10), (15,20)]<br>
+<br>
+Timeline:<br>
+0    5   10   15  20    30<br>
+├────┼────┼────┼───┼────┤<br>
+│████████████████████████│ Meeting 1: (0,30)<br>
+│     ████████          │ Meeting 2: (5,10)  ← Conflicts!<br>
+│          ████████     │ Meeting 3: (15,20) ← Conflicts!<br>
+<br>
+🔥 Conflicts detected → Need multiple rooms</code></pre><br>
+<br>
+<h3>Interval Intersection</h3><br>
+<pre><code>A: [1,3], [5,7], [9,11]<br>
+B: [2,4], [6,8], [10,12]<br>
+<br>
+Visual intersection:<br>
+1   2   3   4   5   6   7   8   9  10  11  12<br>
+[─────────]         [─────────]     [─────────]  A<br>
+    [─────────]         [─────────]     [─────────]  B<br>
+    [───]               [─]             [─]         Intersections<br>
+<br>
+Result: [[2,3], [6,7], [10,11]]</code></pre><br>
+<br>
+<br>
+Interval problems involve working with ranges of values. The key insight is usually to sort intervals by their start time and then process them in order.<br>
+<br>
+Common patterns include merging overlapping intervals, finding non-overlapping intervals, and scheduling problems.<br>
+<br>
+<h2>Interview Tips</h2><br>
+<br>
+<h3>Pattern Recognition</h3><br>
+- When to identify this technique in problem statements<br>
+- Key indicators and problem characteristics<br>
+- Similar problem types and variations<br>
+<br>
+<h3>Common Mistakes</h3><br>
+- Implementation pitfalls to avoid<br>
+- Edge cases that are often missed<br>
+- Performance considerations<br>
+<br>
+<h3>Implementation Variations</h3><br>
+<pre><code>// Alternative approaches and optimizations<br>
+// Template code for common variations</code></pre><br>
+<br>
+<h2>Time & Space Complexity</h2><br>
+<br>
+| Problem Type | Time Complexity | Space Complexity |<br>
+|-------------|----------------|------------------|<br>
+| Merge Intervals | O(n log n) | O(n) |<br>
+| Insert Interval | O(n) | O(n) |<br>
+| Meeting Rooms | O(n log n) | O(n) |<br>
+| Calendar Problems | O(n) per operation | O(n) |<br>
+<br>
+Most interval problems require O(n log n) time due to sorting, with O(n) space for the result.<br>
+<br>
+---<br>
+<br>
+[← Previous: Monotonic Stack](05_Monotonic_Stack.md) | [Back to Main Guide](README.md) | [Next: Top-K & Heaps →](07_TopK_Heaps.md)<br>
+<br>
+---<br>
+<br>
+<blockquote>**→ Key Idea**: Use heaps to efficiently maintain top-k elements or find extremes in streaming data</blockquote><br>
+<br>
+<blockquote>**• When to use**: Finding top-k elements, streaming data, priority scheduling, median finding</blockquote><br>
+<br>
+<blockquote>**⊕ Complexity**: Time O(n log k) for top-k, Space O(k)</blockquote><br>
+<br>
+<blockquote>**⚠ Common Pitfall**: Using wrong heap type (min vs max) or not maintaining heap size</blockquote><br>
+<br>
+<h2>Overview</h2><br>
+<br>
+<h2>Visual Example</h2><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<h3>Min-Heap Operations Visualization</h3><br>
+<br>
+<pre><code>╔═════════════════════════════════════════════════════════════════════════════╗<br>
+║                         HEAP DATA STRUCTURE                                ║<br>
+║ Min-Heap Property: parent ≤ children                                       ║<br>
+║ Insert Time Complexity: O(log n)                                          ║<br>
+╚═════════════════════════════════════════════════════════════════════════════╝</code></pre><br>
+<br>
+<br>
+<h2>Core Implementation</h2><br>
+<br>
+<h3>Basic Heap Implementation</h3><br>
+<br>
+<pre><code>import java.util.*;<br>
+<br>
+public class MinHeap {<br>
+    private List<Integer> heap;<br>
+    <br>
+    public MinHeap() {<br>
+        heap = new ArrayList<>();<br>
+    }<br>
+    <br>
+    public void insert(int val) {<br>
+        heap.add(val);<br>
+        heapifyUp(heap.size() - 1);<br>
+    }<br>
+    <br>
+    public int extractMin() {<br>
+        if (heap.isEmpty()) {<br>
+            throw new IllegalStateException("Heap is empty");<br>
+        }<br>
+        <br>
+        int min = heap.get(0);<br>
+        int lastVal = heap.remove(heap.size() - 1);<br>
+        <br>
+        if (!heap.isEmpty()) {<br>
+            heap.set(0, lastVal);<br>
+            heapifyDown(0);<br>
+        }<br>
+        <br>
+        return min;<br>
+    }<br>
+    <br>
+    public int peek() {<br>
+        if (heap.isEmpty()) {<br>
+            throw new IllegalStateException("Heap is empty");<br>
+        }<br>
+        return heap.get(0);<br>
+    }<br>
+    <br>
+    private void heapifyUp(int index) {<br>
+        while (index > 0) {<br>
+            int parentIndex = (index - 1) / 2;<br>
+            <br>
+            if (heap.get(index) >= heap.get(parentIndex)) {<br>
+                break;<br>
+            }<br>
+            <br>
+            swap(index, parentIndex);<br>
+            index = parentIndex;<br>
+        }<br>
+    }<br>
+    <br>
+    private void heapifyDown(int index) {<br>
+        while (true) {<br>
+            int smallest = index;<br>
+            int leftChild = 2 * index + 1;<br>
+            int rightChild = 2 * index + 2;<br>
+            <br>
+            if (leftChild < heap.size() && <br>
+                heap.get(leftChild) < heap.get(smallest)) {<br>
+                smallest = leftChild;<br>
+            }<br>
+            <br>
+            if (rightChild < heap.size() && <br>
+                heap.get(rightChild) < heap.get(smallest)) {<br>
+                smallest = rightChild;<br>
+            }<br>
+            <br>
+            if (smallest == index) {<br>
+                break;<br>
+            }<br>
+            <br>
+            swap(index, smallest);<br>
+            index = smallest;<br>
+        }<br>
+    }<br>
+    <br>
+    private void swap(int i, int j) {<br>
+        int temp = heap.get(i);<br>
+        heap.set(i, heap.get(j));<br>
+        heap.set(j, temp);<br>
+    }<br>
+    <br>
+    public int size() {<br>
+        return heap.size();<br>
+    }<br>
+    <br>
+    public boolean isEmpty() {<br>
+        return heap.isEmpty();<br>
+    }<br>
+}</code></pre><br>
+<br>
+<h3>Priority Queue Using Java Collections</h3><br>
+<br>
+<pre><code>import java.util.PriorityQueue;<br>
+import java.util.Collections;<br>
+<br>
+public class HeapExamples {<br>
+    <br>
+    // Min-heap (default in Java)<br>
+    PriorityQueue<Integer> minHeap = new PriorityQueue<>();<br>
+    <br>
+    // Max-heap (reverse order)<br>
+    PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());<br>
+    <br>
+    // Custom comparator<br>
+    PriorityQueue<int[]> customHeap = new PriorityQueue<>((a, b) -> a[1] - b[1]);<br>
+    <br>
+    // String priority queue (lexicographic order)<br>
+    PriorityQueue<String> stringHeap = new PriorityQueue<>();<br>
+}</code></pre><br>
+<br>
+<h2>Key Optimizations</h2><br>
+<br>
+<h3>1. Top-K Elements Optimization</h3><br>
+<pre><code>public List<Integer> topKElements(int[] nums, int k) {<br>
+    PriorityQueue<Integer> minHeap = new PriorityQueue<>();<br>
+    <br>
+    for (int num : nums) {<br>
+        minHeap.offer(num);<br>
+        <br>
+        if (minHeap.size() > k) {<br>
+            minHeap.poll(); // Remove smallest<br>
+        }<br>
+    }<br>
+    <br>
+    return new ArrayList<>(minHeap);<br>
+}<br>
+<br>
+// Alternative: Use selection algorithm for O(n) average case<br>
+public int quickSelect(int[] nums, int k) {<br>
+    return quickSelectHelper(nums, 0, nums.length - 1, nums.length - k);<br>
+}<br>
+<br>
+private int quickSelectHelper(int[] nums, int left, int right, int targetIndex) {<br>
+    if (left == right) return nums[left];<br>
+    <br>
+    int pivotIndex = partition(nums, left, right);<br>
+    <br>
+    if (pivotIndex == targetIndex) {<br>
+        return nums[pivotIndex];<br>
+    } else if (pivotIndex < targetIndex) {<br>
+        return quickSelectHelper(nums, pivotIndex + 1, right, targetIndex);<br>
+    } else {<br>
+        return quickSelectHelper(nums, left, pivotIndex - 1, targetIndex);<br>
+    }<br>
+}</code></pre><br>
+<br>
+<h3>2. Merge K Sorted Lists Optimization</h3><br>
+<pre><code>// Optimized approach using divide and conquer<br>
+public ListNode mergeKLists(ListNode[] lists) {<br>
+    if (lists == null || lists.length == 0) return null;<br>
+    <br>
+    while (lists.length > 1) {<br>
+        List<ListNode> mergedLists = new ArrayList<>();<br>
+        <br>
+        for (int i = 0; i < lists.length; i += 2) {<br>
+            ListNode l1 = lists[i];<br>
+            ListNode l2 = (i + 1 < lists.length) ? lists[i + 1] : null;<br>
+            mergedLists.add(merge2Lists(l1, l2));<br>
+        }<br>
+        <br>
+        lists = mergedLists.toArray(new ListNode[0]);<br>
+    }<br>
+    <br>
+    return lists[0];<br>
+}<br>
+<br>
+private ListNode merge2Lists(ListNode l1, ListNode l2) {<br>
+    ListNode dummy = new ListNode(0);<br>
+    ListNode current = dummy;<br>
+    <br>
+    while (l1 != null && l2 != null) {<br>
+        if (l1.val <= l2.val) {<br>
+            current.next = l1;<br>
+            l1 = l1.next;<br>
+        } else {<br>
+            current.next = l2;<br>
+            l2 = l2.next;<br>
+        }<br>
+        current = current.next;<br>
+    }<br>
+    <br>
+    current.next = (l1 != null) ? l1 : l2;<br>
+    return dummy.next;<br>
+}</code></pre><br>
+<br>
+---<br>
+<br>
+<blockquote>**→ Key Idea**: Make locally optimal choice at each step to reach global optimum</blockquote><br>
+<br>
+<blockquote>**• When to use**: Activity selection, coin change, jump games, interval scheduling</blockquote><br>
+<br>
+<blockquote>**⊕ Complexity**: Varies by problem, often O(n log n) due to sorting</blockquote><br>
+<br>
+<blockquote>**⚠ Common Pitfall**: Assuming greedy works without proving optimality or missing counterexamples</blockquote><br>
+<br>
+<h2>Overview</h2><br>
+<br>
+<h2>Visual Example</h2><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<h3>Activity Selection Timeline</h3><br>
+<br>
+<pre><code>╔═════════════════════════════════════════════════════════════════════════════╗<br>
+║                       ACTIVITY SELECTION PROBLEM                           ║<br>
+╠═════════════════════════════════════════════════════════════════════════════╣<br>
+║ Timeline:  0   1   2   3   4   5   6   7   8   9   10                      ║<br>
+║           ├───┼───┼───┼───┼───┼───┼───┼───┼───┼───┤                         ║<br>
+║ Activity A: │   ████████████   │   │   │   │   │   │  [1,4] ✅ SELECT      ║<br>
+║ Activity B: │   │   ████████████   │   │   │   │   │  [2,5] ❌ Conflicts   ║<br>
+║ ⚡ Time Complexity: O(n log n) due to sorting                             ║<br>
+╚═════════════════════════════════════════════════════════════════════════════╝</code></pre><br>
+<br>
+<br>
+<h2>Core Implementation</h2><br>
+<br>
+<h3>Activity Selection Problem</h3><br>
+<br>
+<pre><code>import java.util.*;<br>
+<br>
+public class ActivitySelection {<br>
+    static class Activity {<br>
+        int start, end;<br>
+        <br>
+        Activity(int start, int end) {<br>
+            this.start = start;<br>
+            this.end = end;<br>
+        }<br>
+    }<br>
+    <br>
+    /**<br>
+     * Select maximum number of non-overlapping activities<br>
+     */<br>
+    public static List<Activity> selectActivities(Activity[] activities) {<br>
+        // Sort by end time (greedy choice)<br>
+        Arrays.sort(activities, (a, b) -> a.end - b.end);<br>
+        <br>
+        List<Activity> selected = new ArrayList<>();<br>
+        selected.add(activities[0]); // Always select first activity<br>
+        <br>
+        int lastEndTime = activities[0].end;<br>
+        <br>
+        for (int i = 1; i < activities.length; i++) {<br>
+            // If activity starts after previous one ends, select it<br>
+            if (activities[i].start >= lastEndTime) {<br>
+                selected.add(activities[i]);<br>
+                lastEndTime = activities[i].end;<br>
+            }<br>
+        }<br>
+        <br>
+        return selected;<br>
+    }<br>
+}</code></pre><br>
+<br>
+<h3>Fractional Knapsack</h3><br>
+<br>
+<pre><code>import java.util.*;<br>
+<br>
+public class FractionalKnapsack {<br>
+    static class Item {<br>
+        int weight, value;<br>
+        double ratio;<br>
+        <br>
+        Item(int weight, int value) {<br>
+            this.weight = weight;<br>
+            this.value = value;<br>
+            this.ratio = (double) value / weight;<br>
+        }<br>
+    }<br>
+    <br>
+    /**<br>
+     * Fractional knapsack using greedy approach<br>
+     */<br>
+    public static double fractionalKnapsack(Item[] items, int capacity) {<br>
+        // Sort by value-to-weight ratio (greedy choice)<br>
+        Arrays.sort(items, (a, b) -> Double.compare(b.ratio, a.ratio));<br>
+        <br>
+        double totalValue = 0.0;<br>
+        int currentWeight = 0;<br>
+        <br>
+        for (Item item : items) {<br>
+            if (currentWeight + item.weight <= capacity) {<br>
+                // Take entire item<br>
+                currentWeight += item.weight;<br>
+                totalValue += item.value;<br>
+            } else {<br>
+                // Take fraction of item<br>
+                int remainingCapacity = capacity - currentWeight;<br>
+                totalValue += item.ratio * remainingCapacity;<br>
+                break;<br>
+            }<br>
+        }<br>
+        <br>
+        return totalValue;<br>
+    }<br>
+}</code></pre><br>
+<br>
+<h3>Huffman Coding</h3><br>
+<br>
+<pre><code>import java.util.*;<br>
+<br>
+public class HuffmanCoding {<br>
+    static class Node implements Comparable<Node> {<br>
+        char character;<br>
+        int frequency;<br>
+        Node left, right;<br>
+        <br>
+        Node(char character, int frequency) {<br>
+            this.character = character;<br>
+            this.frequency = frequency;<br>
+        }<br>
+        <br>
+        Node(int frequency, Node left, Node right) {<br>
+            this.frequency = frequency;<br>
+            this.left = left;<br>
+            this.right = right;<br>
+        }<br>
+        <br>
+        @Override<br>
+        public int compareTo(Node other) {<br>
+            return this.frequency - other.frequency;<br>
+        }<br>
+        <br>
+        boolean isLeaf() {<br>
+            return left == null && right == null;<br>
+        }<br>
+    }<br>
+    <br>
+    /**<br>
+     * Build Huffman tree using greedy approach<br>
+     */<br>
+    public static Node buildHuffmanTree(Map<Character, Integer> frequencies) {<br>
+        PriorityQueue<Node> minHeap = new PriorityQueue<>();<br>
+        <br>
+        // Create leaf nodes<br>
+        for (Map.Entry<Character, Integer> entry : frequencies.entrySet()) {<br>
+            minHeap.offer(new Node(entry.getKey(), entry.getValue()));<br>
+        }<br>
+        <br>
+        // Build tree greedily<br>
+        while (minHeap.size() > 1) {<br>
+            Node left = minHeap.poll();<br>
+            Node right = minHeap.poll();<br>
+            <br>
+            Node merged = new Node(left.frequency + right.frequency, left, right);<br>
+            minHeap.offer(merged);<br>
+        }<br>
+        <br>
+        return minHeap.poll();<br>
+    }<br>
+    <br>
+    /**<br>
+     * Generate Huffman codes<br>
+     */<br>
+    public static Map<Character, String> generateCodes(Node root) {<br>
+        Map<Character, String> codes = new HashMap<>();<br>
+        generateCodesHelper(root, "", codes);<br>
+        return codes;<br>
+    }<br>
+    <br>
+    private static void generateCodesHelper(Node node, String code, Map<Character, String> codes) {<br>
+        if (node.isLeaf()) {<br>
+            codes.put(node.character, code.isEmpty() ? "0" : code);<br>
+            return;<br>
+        }<br>
+        <br>
+        generateCodesHelper(node.left, code + "0", codes);<br>
+        generateCodesHelper(node.right, code + "1", codes);<br>
+    }<br>
+}</code></pre><br>
+<br>
+<h2>Key Optimizations</h2><br>
+<br>
+<h3>1. Sorting Optimization for Intervals</h3><br>
+<pre><code>public class IntervalScheduling {<br>
+    <br>
+    /**<br>
+     * Optimized interval sorting with custom comparator<br>
+     */<br>
+    public static int maxNonOverlappingIntervals(int[][] intervals) {<br>
+        if (intervals.length == 0) return 0;<br>
+        <br>
+        // Sort by end time with tie-breaking by start time<br>
+        Arrays.sort(intervals, (a, b) -> {<br>
+            if (a[1] != b[1]) return a[1] - b[1]; // End time<br>
+            return a[0] - b[0]; // Start time for ties<br>
+        });<br>
+        <br>
+        int count = 1;<br>
+        int lastEnd = intervals[0][1];<br>
+        <br>
+        for (int i = 1; i < intervals.length; i++) {<br>
+            if (intervals[i][0] >= lastEnd) {<br>
+                count++;<br>
+                lastEnd = intervals[i][1];<br>
+            }<br>
+        }<br>
+        <br>
+        return count;<br>
+    }<br>
+}</code></pre><br>
+<br>
+<h3>2. Jump Game Optimizations</h3><br>
+<pre><code>public class JumpGame {<br>
+    <br>
+    /**<br>
+     * Jump Game I - Can reach end?<br>
+     */<br>
+    public static boolean canJump(int[] nums) {<br>
+        int maxReach = 0;<br>
+        <br>
+        for (int i = 0; i < nums.length; i++) {<br>
+            if (i > maxReach) return false; // Can't reach this position<br>
+            <br>
+            maxReach = Math.max(maxReach, i + nums[i]);<br>
+            <br>
+            if (maxReach >= nums.length - 1) return true;<br>
+        }<br>
+        <br>
+        return true;<br>
+    }<br>
+    <br>
+    /**<br>
+     * Jump Game II - Minimum jumps to reach end<br>
+     */<br>
+    public static int minJumps(int[] nums) {<br>
+        if (nums.length <= 1) return 0;<br>
+        <br>
+        int jumps = 0;<br>
+        int currentEnd = 0;<br>
+        int farthest = 0;<br>
+        <br>
+        for (int i = 0; i < nums.length - 1; i++) {<br>
+            farthest = Math.max(farthest, i + nums[i]);<br>
+            <br>
+            if (i == currentEnd) {<br>
+                jumps++;<br>
+                currentEnd = farthest;<br>
+                <br>
+                if (currentEnd >= nums.length - 1) break;<br>
+            }<br>
+        }<br>
+        <br>
+        return jumps;<br>
+    }<br>
+}</code></pre><br>
+<br>
+---<br>
+<br>
+<blockquote>**→ Key Idea**: Break problem into subproblems and store results to avoid recomputation</blockquote><br>
+<br>
+<blockquote>**• When to use**: Optimization problems, overlapping subproblems, optimal substructure</blockquote><br>
+<br>
+<blockquote>**⊕ Complexity**: Time/Space vary by problem dimension (1D: O(n), 2D: O(n²))</blockquote><br>
+<br>
+<blockquote>**⚠ Common Pitfall**: Not identifying optimal substructure or inefficient state representation</blockquote><br>
+<br>
+<h2>Overview</h2><br>
+<br>
+Dynamic Programming (DP) solves problems by breaking them into smaller subproblems and storing results to avoid redundant calculations. It works when problems have optimal substructure and overlapping subproblems.<br>
+<br>
+Key steps: 1) Define state, 2) Identify base cases, 3) Find recurrence relation, 4) Determine computation order.<br>
+<br>
+<h2>Interview Tips</h2><br>
+<br>
+<h3>Pattern Recognition</h3><br>
+- When to identify this technique in problem statements<br>
+- Key indicators and problem characteristics<br>
+- Similar problem types and variations<br>
+<br>
+<h3>Common Mistakes</h3><br>
+- Implementation pitfalls to avoid<br>
+- Edge cases that are often missed<br>
+- Performance considerations<br>
+<br>
+<h3>Implementation Variations</h3><br>
+<pre><code>// Alternative approaches and optimizations<br>
+// Template code for common variations</code></pre><br>
+<br>
+<h2>Time & Space Complexity</h2><br>
+<br>
+| Problem Type | Time Complexity | Space Complexity |<br>
+|-------------|----------------|------------------|<br>
+| 1D Linear DP | O(n) | O(n) → O(1) optimized |<br>
+| 2D Grid DP | O(mn) | O(mn) → O(n) optimized |<br>
+| LCS/Edit Distance | O(mn) | O(mn) → O(min(m,n)) |<br>
+| Knapsack | O(nW) | O(W) |<br>
+| LIS | O(n²) → O(n log n) | O(n) |<br>
+<br>
+Most DP problems can be space-optimized by observing that we often only need previous states.<br>
+<br>
+---<br>
+<br>
+[← Previous: Greedy Algorithms](08_Greedy.md) | [Back to Main Guide](README.md) | [Next: Graph Algorithms →](10_Graph_Algorithms.md)<br>
+<br>
+---<br>
+<br>
+<blockquote>**→ Key Idea**: Model problems as graphs and use traversal/search algorithms to find solutions</blockquote><br>
+<br>
+<blockquote>**• When to use**: Connectivity, shortest path, cycle detection, topological ordering</blockquote><br>
+<br>
+<blockquote>**⊕ Complexity**: BFS/DFS: O(V+E), Dijkstra: O(E log V), MST: O(E log V)</blockquote><br>
+<br>
+<blockquote>**⚠ Common Pitfall**: Not handling disconnected components or choosing wrong algorithm</blockquote><br>
+<br>
+<h2>Overview</h2><br>
+<br>
+<br>
+<h2>Visual Example</h2><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<h3>BFS vs DFS Traversal Comparison</h3><br>
+<br>
+<pre><code>╔═════════════════════════════════════════════════════════════════════════════╗<br>
+║                         GRAPH TRAVERSAL ALGORITHMS                         ║<br>
+║ BFS: Wave-like exploration (level by level)                               ║<br>
+║ DFS: Deep exploration (go as far as possible)                             ║<br>
+║ Both: Time O(V + E), Space O(V)                                           ║<br>
+╚═════════════════════════════════════════════════════════════════════════════╝</code></pre><br>
+<br>
+<br>
+<h2>Interview Tips</h2><br>
+<br>
+<h3>Pattern Recognition</h3><br>
+- When to identify this technique in problem statements<br>
+- Key indicators and problem characteristics<br>
+- Similar problem types and variations<br>
+<br>
+<h3>Common Mistakes</h3><br>
+- Implementation pitfalls to avoid<br>
+- Edge cases that are often missed<br>
+- Performance considerations<br>
+<br>
+<h3>Implementation Variations</h3><br>
+<pre><code>// Alternative approaches and optimizations<br>
+// Template code for common variations</code></pre><br>
+<br>
+<h2>Time & Space Complexity</h2><br>
+<br>
+| Algorithm | Time Complexity | Space Complexity |<br>
+|-----------|----------------|------------------|<br>
+| BFS/DFS | O(V + E) | O(V) |<br>
+| Dijkstra | O((V + E) log V) | O(V) |<br>
+| Bellman-Ford | O(VE) | O(V) |<br>
+| Kruskal MST | O(E log E) | O(V) |<br>
+| Prim MST | O(E log V) | O(V) |<br>
+<br>
+Where V = vertices, E = edges.<br>
+<br>
+---<br>
+<br>
+[← Previous: Dynamic Programming](09_Dynamic_Programming.md) | [Back to Main Guide](README.md) | [Next: Tree Algorithms →](11_Tree_Algorithms.md)<br>
+<br>
+---<br>
+<br>
+<blockquote>**→ Key Idea**: Leverage tree properties like hierarchy and recursion for efficient solutions</blockquote><br>
+<br>
+<blockquote>**• When to use**: Tree traversal, BST operations, path problems, tree construction</blockquote><br>
+<br>
+<blockquote>**⊕ Complexity**: Most operations O(h) where h is height, O(n) for traversal</blockquote><br>
+<br>
+<blockquote>**⚠ Common Pitfall**: Not handling null nodes or unbalanced trees leading to O(n) height</blockquote><br>
+<br>
+<h2>Overview</h2><br>
+<br>
+Tree algorithms operate on hierarchical data structures. Key patterns include traversals, BST operations, path finding, and tree properties like height and diameter.<br>
+<br>
+<h2>Interview Tips</h2><br>
+<br>
+<h3>Pattern Recognition</h3><br>
+- When to identify this technique in problem statements<br>
+- Key indicators and problem characteristics<br>
+- Similar problem types and variations<br>
+<br>
+<h3>Common Mistakes</h3><br>
+- Implementation pitfalls to avoid<br>
+- Edge cases that are often missed<br>
+- Performance considerations<br>
+<br>
+<h3>Implementation Variations</h3><br>
+<pre><code>// Alternative approaches and optimizations<br>
+// Template code for common variations</code></pre><br>
+<br>
+<h2>Time & Space Complexity</h2><br>
+<br>
+| Operation | Time Complexity | Space Complexity |<br>
+|-----------|----------------|------------------|<br>
+| Tree Traversal | O(n) | O(h) |<br>
+| BST Search | O(log n) avg, O(n) worst | O(h) |<br>
+| Tree Construction | O(n) | O(n) |<br>
+| Path Problems | O(n) | O(h) |<br>
+<br>
+Where n = number of nodes, h = height of tree.<br>
+<br>
+---<br>
+<br>
+[← Previous: Graph Algorithms](10_Graph_Algorithms.md) | [Back to Main Guide](README.md) | [Next: Backtracking →](12_Backtracking.md)<br>
+<br>
+---<br>
+<br>
+<blockquote>**→ Key Idea**: Explore solution space recursively and backtrack when constraints are violated</blockquote><br>
+<br>
+<blockquote>**• When to use**: Permutations, combinations, constraint satisfaction, puzzle solving</blockquote><br>
+<br>
+<blockquote>**⊕ Complexity**: Exponential in worst case, depends on pruning effectiveness</blockquote><br>
+<br>
+<blockquote>**⚠ Common Pitfall**: Not properly backtracking state or missing pruning opportunities</blockquote><br>
+<br>
+<h2>Overview</h2><br>
+<br>
+<br>
+<br>
+<h2>Interview Tips</h2><br>
+<br>
+<h3>Pattern Recognition</h3><br>
+- When to identify this technique in problem statements<br>
+- Key indicators and problem characteristics<br>
+- Similar problem types and variations<br>
+<br>
+<h3>Common Mistakes</h3><br>
+- Implementation pitfalls to avoid<br>
+- Edge cases that are often missed<br>
+- Performance considerations<br>
+<br>
+<h3>Implementation Variations</h3><br>
+<pre><code>// Alternative approaches and optimizations<br>
+// Template code for common variations</code></pre><br>
+<br>
+---<br>
+<br>
+[← Previous: Tree Algorithms](11_Tree_Algorithms.md) | [Back to Main Guide](README.md) | [Next: Trie & String Algorithms →](13_Trie_Strings.md)<br>
+<br>
+---<br>
+<br>
+<blockquote>**→ Key Idea**: Use prefix trees and pattern matching for efficient string operations</blockquote><br>
+<br>
+<blockquote>**• When to use**: Prefix matching, autocomplete, pattern searching, dictionary operations</blockquote><br>
+<br>
+<blockquote>**⊕ Complexity**: Trie operations O(m) where m is string length, KMP O(n+m)</blockquote><br>
+<br>
+<blockquote>**⚠ Common Pitfall**: Not handling memory efficiently in trie or implementing pattern matching incorrectly</blockquote><br>
+<br>
+<h2>Overview</h2><br>
+<br>
+<br>
+<h2>Visual Example</h2><br>
+<br>
+<h3>Trie Structure Visualization</h3><br>
+<pre><code>Words: ["cat", "car", "card", "dog", "dodge"]<br>
+<br>
+Trie Structure:<br>
+                root<br>
+               /    \<br>
+              c      d<br>
+              │      │<br>
+              a      o<br>
+              │      │<br>
+              t      g<br>
+             /│\    /│\<br>
+            ★ r e  ★ d<br>
+              │      │<br>
+              ★      g<br>
+              │      │<br>
+              d      e<br>
+              │      │<br>
+              ★      ★<br>
+<br>
+★ = End of word marker<br>
+<br>
+>> Prefix "ca" shared by "cat", "car", "card"<br>
+>> Prefix "dog" shared by "dog", "dodge"</code></pre><br>
+<br>
+<h3>Trie Search Process</h3><br>
+<pre><code>Search for "car":<br>
+<br>
+Step 1: Start at root<br>
+Step 2: Follow 'c' → found<br>
+Step 3: Follow 'a' → found  <br>
+Step 4: Follow 'r' → found + end marker ★<br>
+Result: "car" exists in trie ✓<br>
+<br>
+Search for "care":<br>
+Step 1-3: Same as above<br>
+Step 4: Follow 'e' → not found ✗<br>
+Result: "care" does not exist<br>
+<br>
+>> Search complexity: O(length of word)</code></pre><br>
+<br>
+<h3>KMP Failure Function</h3><br>
+<pre><code>Pattern: "ABABCABAB"<br>
+Text:    "ABABDABABCABABCABAB"<br>
+<br>
+Build failure function for pattern:<br>
+A B A B C A B A B<br>
+0 0 1 2 0 1 2 3 4<br>
+│ │ │ │ │ │ │ │ │<br>
+└─┼─┘ │ │ └─┼─┘ │<br>
+  └───┘ │   └───┘<br>
+        │<br>
+   No prefix match<br>
+<br>
+KMP Search with failure function:<br>
+Text:    A B A B D A B A B C A B A B C A B A B<br>
+Pattern: A B A B C A B A B<br>
+         ↑ ↑ ↑ ↑ ✗<br>
+         Use failure function to skip ahead instead of restarting<br>
+<br>
+⚡ Avoids redundant character comparisons</code></pre><br>
+<br>
+<br>
+<br>
+<br>
+<h2>Interview Tips</h2><br>
+<br>
+<h3>Pattern Recognition</h3><br>
+- When to identify this technique in problem statements<br>
+- Key indicators and problem characteristics<br>
+- Similar problem types and variations<br>
+<br>
+<h3>Common Mistakes</h3><br>
+- Implementation pitfalls to avoid<br>
+- Edge cases that are often missed<br>
+- Performance considerations<br>
+<br>
+<h3>Implementation Variations</h3><br>
+<pre><code>// Alternative approaches and optimizations<br>
+// Template code for common variations</code></pre><br>
+<br>
+---<br>
+<br>
+[← Previous: Backtracking](12_Backtracking.md) | [Back to Main Guide](README.md) | [Next: Math & Bit Manipulation →](14_Math_Bits.md)<br>
+<br>
+---<br>
+<br>
+<blockquote>**→ Key Idea**: Use mathematical properties and bit operations for efficient computation</blockquote><br>
+<br>
+<blockquote>**• When to use**: Number theory, prime numbers, bit operations, mathematical optimization</blockquote><br>
+<br>
+<blockquote>**⊕ Complexity**: Varies by algorithm, bit operations typically O(1) or O(log n)</blockquote><br>
+<br>
+<blockquote>**⚠ Common Pitfall**: Integer overflow, incorrect bit manipulation, or not using mathematical shortcuts</blockquote><br>
+<br>
+<h2>Overview</h2><br>
+<br>
+<br>
+<br>
+<h2>Interview Tips</h2><br>
+<br>
+<h3>Pattern Recognition</h3><br>
+- When to identify this technique in problem statements<br>
+- Key indicators and problem characteristics<br>
+- Similar problem types and variations<br>
+<br>
+<h3>Common Mistakes</h3><br>
+- Implementation pitfalls to avoid<br>
+- Edge cases that are often missed<br>
+- Performance considerations<br>
+<br>
+<h3>Implementation Variations</h3><br>
+<pre><code>// Alternative approaches and optimizations<br>
+// Template code for common variations</code></pre><br>
+<br>
+---<br>
+<br>
+[← Previous: Trie & String Algorithms](13_Trie_Strings.md) | [Back to Main Guide](README.md) | [Next: Java Data Structures →](15_Java_DataStructures.md)<br>
+<br>
+---<br>
+<br>
+<blockquote>**→ Key Idea**: Master Java's built-in data structures for efficient interview problem solving</blockquote><br>
+<br>
+<blockquote>**• When to use**: Interview implementation, understanding performance characteristics, choosing right collections</blockquote><br>
+<br>
+<blockquote>**⊕ Complexity**: Varies by data structure, HashMap O(1), TreeMap O(log n), ArrayList O(1) amortized</blockquote><br>
+<br>
+<blockquote>**⚠ Common Pitfall**: Using wrong collection type or not understanding performance implications</blockquote><br>
+<br>
+<h2>Overview</h2><br>
+<br>
+<br>
+<br>
+<h2>Interview Tips</h2><br>
+<br>
+<h3>Pattern Recognition</h3><br>
+- When to identify this technique in problem statements<br>
+- Key indicators and problem characteristics<br>
+- Similar problem types and variations<br>
+<br>
+<h3>Common Mistakes</h3><br>
+- Implementation pitfalls to avoid<br>
+- Edge cases that are often missed<br>
+- Performance considerations<br>
+<br>
+<h3>Implementation Variations</h3><br>
+<pre><code>// Alternative approaches and optimizations<br>
+// Template code for common variations</code></pre><br>
+<br>
+---<br>
+<br>
+[← Previous: Math & Bit Manipulation](14_Math_Bits.md) | [Back to Main Guide](README.md) | [Next: Flow Algorithms →](16_Flow_Algorithms.md)<br>
+<br>
+---<br>
+<br>
+<blockquote>**→ Key Idea**: Model problems as networks with capacity constraints to find optimal flow</blockquote><br>
+<br>
+<blockquote>**• When to use**: Maximum flow, minimum cut, bipartite matching, assignment problems</blockquote><br>
+<br>
+<blockquote>**⊕ Complexity**: O(V²E) for Ford-Fulkerson, O(V³) for maximum bipartite matching</blockquote><br>
+<br>
+<blockquote>**⚠ Common Pitfall**: Not handling residual graphs correctly or missing augmenting paths</blockquote><br>
+<br>
+<h2>Overview</h2><br>
+<br>
+Flow algorithms solve optimization problems on networks by finding maximum flow from source to sink while respecting capacity constraints. Key applications include network routing, resource allocation, and matching problems.<br>
+<br>
+Flow networks consist of:<br>
+- **Vertices**: Nodes in the network<br>
+- **Edges**: Connections with capacity constraints<br>
+- **Source**: Starting point of flow<br>
+- **Sink**: Destination point of flow<br>
+- **Capacity**: Maximum flow allowed through an edge<br>
+<br>
+<h2>Core Implementation</h2><br>
+<br>
+<h3>Ford-Fulkerson Algorithm (DFS-based)</h3><br>
+<br>
+<pre><code>import java.util.*;<br>
+<br>
+public class MaxFlow {<br>
+    static class Edge {<br>
+        int to, capacity, flow;<br>
+        <br>
+        Edge(int to, int capacity) {<br>
+            this.to = to;<br>
+            this.capacity = capacity;<br>
+            this.flow = 0;<br>
+        }<br>
+        <br>
+        int residualCapacity() {<br>
+            return capacity - flow;<br>
+        }<br>
+    }<br>
+    <br>
+    private List<List<Edge>> graph;<br>
+    private boolean[] visited;<br>
+    <br>
+    public MaxFlow(int n) {<br>
+        graph = new ArrayList<>();<br>
+        for (int i = 0; i < n; i++) {<br>
+            graph.add(new ArrayList<>());<br>
+        }<br>
+        visited = new boolean[n];<br>
+    }<br>
+    <br>
+    public void addEdge(int from, int to, int capacity) {<br>
+        graph.get(from).add(new Edge(to, capacity));<br>
+        graph.get(to).add(new Edge(from, 0)); // Reverse edge for residual graph<br>
+    }<br>
+    <br>
+    /**<br>
+     * Ford-Fulkerson algorithm using DFS<br>
+     */<br>
+    public int maxFlow(int source, int sink) {<br>
+        int totalFlow = 0;<br>
+        <br>
+        while (true) {<br>
+            Arrays.fill(visited, false);<br>
+            int pathFlow = dfs(source, sink, Integer.MAX_VALUE);<br>
+            <br>
+            if (pathFlow == 0) break; // No augmenting path found<br>
+            <br>
+            totalFlow += pathFlow;<br>
+        }<br>
+        <br>
+        return totalFlow;<br>
+    }<br>
+    <br>
+    private int dfs(int node, int sink, int minCapacity) {<br>
+        if (node == sink) return minCapacity;<br>
+        <br>
+        visited[node] = true;<br>
+        <br>
+        for (Edge edge : graph.get(node)) {<br>
+            if (!visited[edge.to] && edge.residualCapacity() > 0) {<br>
+                int pathFlow = dfs(edge.to, sink, <br>
+                    Math.min(minCapacity, edge.residualCapacity()));<br>
+                <br>
+                if (pathFlow > 0) {<br>
+                    edge.flow += pathFlow;<br>
+                    <br>
+                    // Update reverse edge<br>
+                    for (Edge reverseEdge : graph.get(edge.to)) {<br>
+                        if (reverseEdge.to == node) {<br>
+                            reverseEdge.flow -= pathFlow;<br>
+                            break;<br>
+                        }<br>
+                    }<br>
+                    <br>
+                    return pathFlow;<br>
+                }<br>
+            }<br>
+        }<br>
+        <br>
+        return 0;<br>
+    }<br>
+}</code></pre><br>
+<br>
+<h3>Edmonds-Karp Algorithm (BFS-based)</h3><br>
+<br>
+<pre><code>public class EdmondsKarp {<br>
+    private int[][] capacity;<br>
+    private int[][] flow;<br>
+    private int[] parent;<br>
+    private int n;<br>
+    <br>
+    public EdmondsKarp(int n) {<br>
+        this.n = n;<br>
+        capacity = new int[n][n];<br>
+        flow = new int[n][n];<br>
+        parent = new int[n];<br>
+    }<br>
+    <br>
+    public void addEdge(int from, int to, int cap) {<br>
+        capacity[from][to] = cap;<br>
+    }<br>
+    <br>
+    /**<br>
+     * Edmonds-Karp algorithm using BFS<br>
+     */<br>
+    public int maxFlow(int source, int sink) {<br>
+        int totalFlow = 0;<br>
+        <br>
+        while (bfs(source, sink)) {<br>
+            int pathFlow = Integer.MAX_VALUE;<br>
+            <br>
+            // Find minimum capacity along the path<br>
+            for (int v = sink; v != source; v = parent[v]) {<br>
+                int u = parent[v];<br>
+                pathFlow = Math.min(pathFlow, capacity[u][v] - flow[u][v]);<br>
+            }<br>
+            <br>
+            // Update flow along the path<br>
+            for (int v = sink; v != source; v = parent[v]) {<br>
+                int u = parent[v];<br>
+                flow[u][v] += pathFlow;<br>
+                flow[v][u] -= pathFlow; // Reverse edge<br>
+            }<br>
+            <br>
+            totalFlow += pathFlow;<br>
+        }<br>
+        <br>
+        return totalFlow;<br>
+    }<br>
+    <br>
+    private boolean bfs(int source, int sink) {<br>
+        boolean[] visited = new boolean[n];<br>
+        Queue<Integer> queue = new LinkedList<>();<br>
+        <br>
+        queue.offer(source);<br>
+        visited[source] = true;<br>
+        parent[source] = -1;<br>
+        <br>
+        while (!queue.isEmpty()) {<br>
+            int u = queue.poll();<br>
+            <br>
+            for (int v = 0; v < n; v++) {<br>
+                if (!visited[v] && capacity[u][v] > flow[u][v]) {<br>
+                    queue.offer(v);<br>
+                    visited[v] = true;<br>
+                    parent[v] = u;<br>
+                    if (v == sink) return true;<br>
+                }<br>
+            }<br>
+        }<br>
+        <br>
+        return false;<br>
+    }<br>
+}</code></pre><br>
+<br>
+<h2>Key Optimizations</h2><br>
+<br>
+<h3>1. Residual Graph Construction</h3><br>
+<pre><code>// Efficient residual graph using edge list<br>
+static class EdgeList {<br>
+    List<Edge> edges;<br>
+    List<List<Integer>> graph;<br>
+    <br>
+    void addEdge(int from, int to, int capacity) {<br>
+        graph.get(from).add(edges.size());<br>
+        edges.add(new Edge(to, capacity));<br>
+        <br>
+        graph.get(to).add(edges.size());<br>
+        edges.add(new Edge(from, 0)); // Reverse edge<br>
+    }<br>
+    <br>
+    int residualCapacity(int edgeId) {<br>
+        return edges.get(edgeId).capacity - edges.get(edgeId).flow;<br>
+    }<br>
+}</code></pre><br>
+<br>
+<h3>2. Level-based BFS (Dinic's Algorithm)</h3><br>
+<pre><code>public class Dinic {<br>
+    private int[] level;<br>
+    private int[] iter;<br>
+    <br>
+    private boolean bfs(int source, int sink) {<br>
+        Arrays.fill(level, -1);<br>
+        level[source] = 0;<br>
+        <br>
+        Queue<Integer> queue = new LinkedList<>();<br>
+        queue.offer(source);<br>
+        <br>
+        while (!queue.isEmpty()) {<br>
+            int u = queue.poll();<br>
+            <br>
+            for (int edgeId : graph.get(u)) {<br>
+                Edge edge = edges.get(edgeId);<br>
+                <br>
+                if (level[edge.to] == -1 && edge.residualCapacity() > 0) {<br>
+                    level[edge.to] = level[u] + 1;<br>
+                    queue.offer(edge.to);<br>
+                }<br>
+            }<br>
+        }<br>
+        <br>
+        return level[sink] != -1;<br>
+    }<br>
+}</code></pre><br>
+<br>
+---<br>
+<br>
+
+</body>
+</html>

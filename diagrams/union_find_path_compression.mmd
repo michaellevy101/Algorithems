@@ -1,0 +1,24 @@
+graph LR
+    classDef compressed fill:#BBDEFB,stroke:#1565C0,stroke-width:2px,color:black;
+    classDef path fill:#FFE0B2,stroke:#EF6C00,stroke-width:2px,stroke-dasharray: 5 5,color:black;
+    classDef root fill:#C8E6C9,stroke:#2E7D32,stroke-width:4px,color:black;
+    classDef child fill:#FFFFFF,stroke:#333,stroke-width:2px,color:black;
+    classDef annotation fill:none,stroke:none;
+
+    subgraph "Before Find(3)"
+        direction TB
+        Node3["3"]:::path --> Node2["2"]:::path
+        Node2 --> Node1["1"]:::path
+        Node1 --> RootA["0"]:::root
+        LabelA["Result: Parent is 0"]:::annotation
+    end
+
+    subgraph "After Find(3)"
+        direction TB
+        Node3_New["3"]:::compressed --> RootB["0"]:::root
+        Node2_New["2"]:::compressed --> RootB
+        Node1_New["1"]:::child --> RootB
+        LabelB["Optimization: All nodes point to root"]:::annotation
+    end
+    
+    linkStyle default stroke:#555,stroke-width:2px;

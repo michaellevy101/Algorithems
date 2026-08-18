@@ -1,0 +1,447 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Complete Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50;
+            margin-top: 2em;
+            margin-bottom: 1em;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid #e74c3c; padding-bottom: 8px; }
+        h3 { font-size: 1.5em; color: #e67e22; }
+        
+        code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 2px 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            line-height: 1.45;
+        }
+        
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            border-radius: 0;
+        }
+        
+        blockquote {
+            border-left: 4px solid #3498db;
+            background-color: #ecf0f1;
+            padding: 15px 20px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+        
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        @media print {
+            body { font-size: 12px; }
+            h1 { font-size: 20px; }
+            h2 { font-size: 16px; }
+            h3 { font-size: 14px; }
+            pre { font-size: 10px; }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+</head>
+<body>
+<h1>Algorithm Interview Reference — Quick Reference Guide</h1><br>
+<br>
+<h2>Table of Contents</h2><br>
+<br>
+**1.** [Union-Find](#1-union-find)  <br>
+**2.** [Binary Search](#2-binary-search)  <br>
+**3.** [Two Pointers](#3-two-pointers)  <br>
+**4.** [Sliding Window](#4-sliding-window)  <br>
+**5.** [Monotonic Stack](#5-monotonic-stack)  <br>
+**6.** [Intervals](#6-intervals)  <br>
+**7.** [Top-K & Heaps](#7-top-k--heaps)  <br>
+**8.** [Greedy Algorithms](#8-greedy-algorithms)  <br>
+**9.** [Dynamic Programming](#9-dynamic-programming)  <br>
+**10.** [Graph Algorithms](#10-graph-algorithms)  <br>
+**11.** [Tree Algorithms](#11-tree-algorithms)  <br>
+**12.** [Backtracking](#12-backtracking)  <br>
+**13.** [String Algorithms](#13-string-algorithms)  <br>
+**14.** [Java Standard Library](#14-java-standard-library)<br>
+<br>
+---<br>
+<br>
+<h1>1. Union-Find 🔗</h1><br>
+<br>
+**When to use**: Connected components, cycle detection, dynamic connectivity  <br>
+**Time**: O(α(n)) per operation with path compression  <br>
+**Space**: O(n)<br>
+<br>
+**Key Operations**: <code>find(x)</code>, <code>union(x, y)</code>, <code>connected(x, y)</code><br>
+<br>
+<pre><code>public class UnionFind {<br>
+    private int[] parent, rank;<br>
+    private int count;<br>
+<br>
+    public UnionFind(int n) {<br>
+        parent = new int[n];<br>
+        rank = new int[n];<br>
+        count = n;<br>
+        for (int i = 0; i < n; i++) parent[i] = i;<br>
+    }<br>
+<br>
+    public int find(int i) {<br>
+        if (parent[i] != i) parent[i] = find(parent[i]); // Path compression<br>
+        return parent[i];<br>
+    }<br>
+<br>
+    public void union(int i, int j) {<br>
+        int rootI = find(i), rootJ = find(j);<br>
+        if (rootI != rootJ) {<br>
+            if (rank[rootI] > rank[rootJ]) parent[rootJ] = rootI;<br>
+            else if (rank[rootI] < rank[rootJ]) parent[rootI] = rootJ;<br>
+            else { parent[rootJ] = rootI; rank[rootI]++; }<br>
+            count--;<br>
+        }<br>
+    }<br>
+<br>
+    public boolean connected(int i, int j) { return find(i) == find(j); }<br>
+    public int getCount() { return count; }<br>
+}</code></pre><br>
+<br>
+**Known Tricks**:<br>
+- Path compression in find()<br>
+- Union by rank for balanced trees<br>
+- Count connected components<br>
+<br>
+---<br>
+<br>
+<h1>2. Binary Search 🔍</h1><br>
+<br>
+**When to use**: Sorted arrays, search spaces, optimization problems  <br>
+**Time**: O(log n)  <br>
+**Space**: O(1)<br>
+<br>
+<pre><code>// Standard Binary Search<br>
+public int binarySearch(int[] nums, int target) {<br>
+    int left = 0, right = nums.length - 1;<br>
+    while (left <= right) {<br>
+        int mid = left + (right - left) / 2;<br>
+        if (nums[mid] == target) return mid;<br>
+        else if (nums[mid] < target) left = mid + 1;<br>
+        else right = mid - 1;<br>
+    }<br>
+    return -1;<br>
+}<br>
+<br>
+// Lower Bound (first position >= target)<br>
+public int lowerBound(int[] nums, int target) {<br>
+    int left = 0, right = nums.length;<br>
+    while (left < right) {<br>
+        int mid = left + (right - left) / 2;<br>
+        if (nums[mid] < target) left = mid + 1;<br>
+        else right = mid;<br>
+    }<br>
+    return left;<br>
+}</code></pre><br>
+<br>
+**Known Tricks**:<br>
+- Avoid overflow: <code>mid = left + (right - left) / 2</code><br>
+- Lower bound: <code>if (arr[mid] < target) left = mid + 1; else right = mid;</code><br>
+- Upper bound: <code>if (arr[mid] <= target) left = mid + 1; else right = mid;</code><br>
+- Search range: Use lower bound + upper bound<br>
+<br>
+---<br>
+<br>
+<h1>3. Two Pointers ↔️</h1><br>
+<br>
+**When to use**: Sorted arrays, pairs/triplets, cycle detection, array partitioning  <br>
+**Time**: O(n)  <br>
+**Space**: O(1)<br>
+<br>
+**Patterns**:<br>
+- **Opposite ends**: <code>left = 0, right = n-1; move based on sum</code><br>
+- **Same direction**: Fast/slow pointers for cycles<br>
+- **Partitioning**: Separate elements by condition<br>
+<br>
+**Known Tricks**:<br>
+- Three Sum: Fix one element, use two pointers on rest<br>
+- Remove duplicates: Skip <code>while (nums[i] == nums[i+1]) i++</code><br>
+- Dutch National Flag: Use 3 pointers for 3-way partition<br>
+- Cycle detection: Floyd's algorithm (tortoise and hare)<br>
+<br>
+---<br>
+<br>
+<h1>4. Sliding Window 📊</h1><br>
+<br>
+**When to use**: Subarray/substring problems, fixed/variable window constraints  <br>
+**Time**: O(n)  <br>
+**Space**: O(k) for tracking characters<br>
+<br>
+**Patterns**:<br>
+- **Fixed window**: Calculate first window, then slide<br>
+- **Variable window**: Expand right, contract left when invalid<br>
+- **At most K**: Use map to track frequencies<br>
+<br>
+**Known Tricks**:<br>
+- Contract window: <code>while (condition_violated) { remove_left_element; left++; }</code><br>
+- Frequency map: <code>map.put(char, map.getOrDefault(char, 0) + 1)</code><br>
+- Valid window: Track number of valid characters vs required<br>
+<br>
+---<br>
+<br>
+<h1>5. Monotonic Stack 📈</h1><br>
+<br>
+**When to use**: Next greater/smaller element, histogram problems, temperature problems  <br>
+**Time**: O(n)  <br>
+**Space**: O(n)<br>
+<br>
+**Principle**: Maintain elements in monotonic order (increasing/decreasing)<br>
+<br>
+**Known Tricks**:<br>
+- Store indices instead of values for distance calculations<br>
+- **Next greater**: Pop while <code>stack.peek() < current</code><br>
+- **Previous smaller**: Same logic, iterate backwards<br>
+- **Histogram**: Add sentinel 0 at end to flush remaining elements<br>
+<br>
+---<br>
+<br>
+<h1>6. Intervals 📅</h1><br>
+<br>
+**When to use**: Meeting rooms, scheduling, overlapping ranges  <br>
+**Time**: O(n log n) for sorting  <br>
+**Space**: O(n)<br>
+<br>
+**Standard approach**: Sort by start time, then merge/process<br>
+<br>
+**Known Tricks**:<br>
+- **Merge**: <code>if (current[1] >= next[0]) merge else add current</code><br>
+- **Insert**: Process non-overlapping before/after separately<br>
+- **Meeting rooms**: Use min heap to track end times<br>
+- **Activity selection**: Sort by end time, greedy select<br>
+<br>
+---<br>
+<br>
+<h1>7. Top-K & Heaps 🏔️</h1><br>
+<br>
+**When to use**: Kth largest/smallest, streaming data, priority processing  <br>
+**Time**: O(n log k)  <br>
+**Space**: O(k)<br>
+<br>
+**Principle**: Use heap of size K to maintain top/bottom K elements<br>
+<br>
+**Known Tricks**:<br>
+- **Kth largest**: Use min heap of size K<br>
+- **Kth smallest**: Use max heap of size K<br>
+- **Streaming median**: Use two heaps (max heap for smaller half, min heap for larger)<br>
+- **K closest points**: Use max heap with distance comparison<br>
+<br>
+---<br>
+<br>
+<h1>8. Greedy Algorithms 🎯</h1><br>
+<br>
+**When to use**: Activity selection, scheduling, optimization with greedy choice property  <br>
+**Time**: Varies (often O(n log n) due to sorting)<br>
+<br>
+**Principle**: Make locally optimal choice at each step<br>
+<br>
+**Common patterns**:<br>
+- **Activity selection**: Sort by end time<br>
+- **Interval scheduling**: Greedy by earliest finish time<br>
+- **Jump game**: Always jump to furthest reachable position<br>
+<br>
+**Known Tricks**:<br>
+- Prove greedy choice is safe<br>
+- Sort by the "limiting" constraint<br>
+- Consider exchange argument for optimality proof<br>
+<br>
+---<br>
+<br>
+<h1>9. Dynamic Programming 🔄</h1><br>
+<br>
+**When to use**: Optimization problems, counting, overlapping subproblems  <br>
+**Time**: O(n²) typical  <br>
+**Space**: O(n) or O(n²)<br>
+<br>
+**Steps**: <br>
+1. Define state<br>
+2. Find recurrence relation<br>
+3. Identify base cases<br>
+4. Determine computation order<br>
+<br>
+**Patterns**:<br>
+- **1D DP**: <code>dp[i] = f(dp[i-1], dp[i-2], ...)</code><br>
+- **2D DP**: <code>dp[i][j] = f(dp[i-1][j], dp[i][j-1], ...)</code><br>
+- **LIS**: <code>dp[i] = max(dp[j] + 1)</code> where <code>arr[j] < arr[i]</code><br>
+<br>
+**Known Tricks**:<br>
+- Space optimization: Only keep previous row/column<br>
+- Bottom-up vs top-down approach<br>
+- Memoization for recursive solutions<br>
+<br>
+---<br>
+<br>
+<h1>10. Graph Algorithms 🕸️</h1><br>
+<br>
+**Representations**:<br>
+- **Adjacency List**: <code>List<List<Integer>></code> - O(V + E) space<br>
+- **Adjacency Matrix**: <code>int[][]</code> - O(V²) space<br>
+<br>
+**Traversal**:<br>
+- **BFS**: Layer by layer using queue - shortest path in unweighted<br>
+- **DFS**: Go deep using recursion/stack - detect cycles, topological sort<br>
+<br>
+**Shortest Path**:<br>
+- **Dijkstra**: Non-negative weights, O((V + E) log V)<br>
+- **Bellman-Ford**: Negative weights, O(VE)<br>
+<br>
+**MST**:<br>
+- **Kruskal**: Sort edges + Union-Find, O(E log E)<br>
+- **Prim**: Start from vertex + priority queue, O((V + E) log V)<br>
+<br>
+**Cycle Detection**:<br>
+- **Undirected**: DFS with parent tracking<br>
+- **Directed**: DFS with 3-coloring (WHITE/GRAY/BLACK)<br>
+<br>
+**Known Tricks**:<br>
+- Use Set in adjacency list to avoid duplicate edges<br>
+- BFS for shortest unweighted path<br>
+- Topological sort: Kahn's algorithm or DFS post-order<br>
+<br>
+---<br>
+<br>
+<h1>11. Tree Algorithms</h1><br>
+<br>
+**Traversals**:<br>
+- **Inorder**: Left → Root → Right (sorted order for BST)<br>
+- **Preorder**: Root → Left → Right (copy structure)<br>
+- **Postorder**: Left → Right → Root (delete nodes)<br>
+<br>
+**Properties**:<br>
+- **Height**: <code>max(left_height, right_height) + 1</code><br>
+- **Diameter**: <code>left_height + right_height</code><br>
+- **Balanced**: Height difference ≤ 1<br>
+<br>
+**BST Operations**:<br>
+- **Validate**: Use min/max bounds<br>
+- **Insert**: Recursive placement<br>
+- **Delete**: Handle 3 cases (leaf, one child, two children)<br>
+<br>
+**Known Tricks**:<br>
+- **LCA**: Return when you find either node, check if both subtrees return non-null<br>
+- **Path sum**: Use backtracking with path list<br>
+- **Serialize**: Use preorder with null markers<br>
+<br>
+---<br>
+<br>
+<h1>12. Backtracking</h1><br>
+<br>
+**When to use**: Generate all solutions, permutations, combinations, constraint satisfaction<br>
+<br>
+**Template**:<br>
+<pre><code>if (goal_reached) { add_solution; return; }<br>
+for (choice in choices) {<br>
+    make_choice;<br>
+    backtrack;<br>
+    undo_choice;<br>
+}</code></pre><br>
+<br>
+**Patterns**:<br>
+- **Permutations**: Use boolean array to track used elements<br>
+- **Combinations**: Use start index to avoid duplicates<br>
+- **Subsets**: Include current element or not<br>
+<br>
+**Known Tricks**:<br>
+- Sort input for duplicate handling<br>
+- Use start index to avoid repeated combinations<br>
+- Swap-based permutations for space efficiency<br>
+- Skip duplicates: <code>if (i > 0 && nums[i] == nums[i-1] && !used[i-1]) continue</code><br>
+<br>
+---<br>
+<br>
+<h1>13. String Algorithms</h1><br>
+<br>
+**Pattern Matching**:<br>
+- **KMP**: O(n + m) with LPS preprocessing<br>
+- **Rabin-Karp**: O(n) average with rolling hash<br>
+- **Boyer-Moore**: O(n/m) best case<br>
+<br>
+**Trie (Prefix Tree)**:<br>
+- **Insert/Search**: O(L) where L is string length<br>
+- **Autocomplete**: DFS from prefix node<br>
+- **Word break**: DP + Trie lookup<br>
+<br>
+**Known Tricks**:<br>
+- **Rolling hash**: <code>hash = (hash * base + char) % mod</code><br>
+- **LPS array**: Longest proper prefix which is also suffix<br>
+- **Manacher's**: Linear time palindrome detection<br>
+- **Z-algorithm**: Linear pattern matching<br>
+<br>
+---<br>
+<br>
+<h1>14. Java Standard Library</h1><br>
+<br>
+**Collections**:<br>
+- <code>Arrays.sort()</code>, <code>Collections.sort()</code><br>
+- <code>Arrays.binarySearch()</code>, <code>Collections.binarySearch()</code><br>
+- <code>List.subList(from, to)</code>, <code>String.substring(start, end)</code><br>
+<br>
+**Data Structures**:<br>
+- **Queue**: <code>LinkedList</code> or <code>ArrayDeque</code><br>
+- **Stack**: <code>ArrayDeque</code> (avoid <code>Stack</code> class)<br>
+- **Heap**: <code>PriorityQueue</code> (min heap default)<br>
+- **Sorted**: <code>TreeMap</code>, <code>TreeSet</code><br>
+<br>
+**Useful Methods**:<br>
+- <code>map.getOrDefault(key, defaultValue)</code><br>
+- <code>map.computeIfAbsent(key, mappingFunction)</code><br>
+- <code>Collections.reverseOrder()</code> for max heap<br>
+- <code>Comparator.comparing()</code> for custom sorting<br>
+<br>
+**Known Tricks**:<br>
+- Use <code>ArrayDeque</code> instead of <code>Stack</code><br>
+- <code>Character.getNumericValue()</code> for digit conversion<br>
+- <code>Integer.MAX_VALUE / 2</code> to avoid overflow in BFS<br>
+- <code>Collections.frequency()</code> for counting occurrences<br>
+
+</body>
+</html>

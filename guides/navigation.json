@@ -3,118 +3,449 @@
   "sections": [
     {
       "title": "Algorithms",
+      "icon": "🧮",
+      "description": "16 algorithm patterns for coding interviews — from Union Find to Flow Algorithms",
       "items": [
-        { "title": "01. Union Find", "path": "algorithms/01_Union_Find.md" },
-        { "title": "02. Binary Search", "path": "algorithms/02_Binary_Search.md" },
-        { "title": "03. Two Pointers", "path": "algorithms/03_Two_Pointers.md" },
-        { "title": "04. Sliding Window", "path": "algorithms/04_Sliding_Window.md" },
-        { "title": "05. Monotonic Stack", "path": "algorithms/05_Monotonic_Stack.md" },
-        { "title": "06. Intervals", "path": "algorithms/06_Intervals.md" },
-        { "title": "07. Top K / Heaps", "path": "algorithms/07_TopK_Heaps.md" },
-        { "title": "08. Greedy", "path": "algorithms/08_Greedy.md" },
-        { "title": "09. Dynamic Programming", "path": "algorithms/09_Dynamic_Programming.md" },
-        { "title": "10. Graph Algorithms", "path": "algorithms/10_Graph_Algorithms.md" },
-        { "title": "11. Tree Algorithms", "path": "algorithms/11_Tree_Algorithms.md" },
-        { "title": "12. Backtracking", "path": "algorithms/12_Backtracking.md" },
-        { "title": "13. Trie & Strings", "path": "algorithms/13_Trie_Strings.md" },
-        { "title": "14. Math & Bits", "path": "algorithms/14_Math_Bits.md" },
-        { "title": "15. Java Data Structures", "path": "algorithms/15_Java_DataStructures.md" },
-        { "title": "16. Flow Algorithms", "path": "algorithms/16_Flow_Algorithms.md" }
+        {
+          "title": "01. Union Find",
+          "path": "algorithms/01_Union_Find.md"
+        },
+        {
+          "title": "02. Binary Search",
+          "path": "algorithms/02_Binary_Search.md"
+        },
+        {
+          "title": "03. Two Pointers",
+          "path": "algorithms/03_Two_Pointers.md"
+        },
+        {
+          "title": "04. Sliding Window",
+          "path": "algorithms/04_Sliding_Window.md"
+        },
+        {
+          "title": "05. Monotonic Stack",
+          "path": "algorithms/05_Monotonic_Stack.md"
+        },
+        {
+          "title": "06. Intervals",
+          "path": "algorithms/06_Intervals.md"
+        },
+        {
+          "title": "07. Top K / Heaps",
+          "path": "algorithms/07_TopK_Heaps.md"
+        },
+        {
+          "title": "08. Greedy",
+          "path": "algorithms/08_Greedy.md"
+        },
+        {
+          "title": "09. Dynamic Programming",
+          "path": "algorithms/09_Dynamic_Programming.md"
+        },
+        {
+          "title": "10. Graph Algorithms",
+          "path": "algorithms/10_Graph_Algorithms.md"
+        },
+        {
+          "title": "11. Tree Algorithms",
+          "path": "algorithms/11_Tree_Algorithms.md"
+        },
+        {
+          "title": "12. Backtracking",
+          "path": "algorithms/12_Backtracking.md"
+        },
+        {
+          "title": "13. Trie & Strings",
+          "path": "algorithms/13_Trie_Strings.md"
+        },
+        {
+          "title": "14. Math & Bits",
+          "path": "algorithms/14_Math_Bits.md"
+        },
+        {
+          "title": "15. Java Data Structures",
+          "path": "algorithms/15_Java_DataStructures.md"
+        },
+        {
+          "title": "16. Flow Algorithms",
+          "path": "algorithms/16_Flow_Algorithms.md"
+        }
       ]
     },
     {
       "title": "System Design - Core",
+      "icon": "🏗️",
+      "description": "30 system design problems — URL shorteners, chat systems, distributed storage, and more",
       "items": [
-        { 
-          "title": "01. Microsoft Teams", 
+        {
+          "title": "01. Microsoft Teams",
           "path": "microsoft-system-design/01-microsoft-teams/README.md",
           "children": [
-            { "title": "Chat & Messaging", "path": "microsoft-system-design/01-microsoft-teams/chat.md" },
-            { "title": "Presence & Status", "path": "microsoft-system-design/01-microsoft-teams/presence.md" },
-            { "title": "Push Notifications", "path": "microsoft-system-design/01-microsoft-teams/notifications.md" },
-            { "title": "Video & Calls", "path": "microsoft-system-design/01-microsoft-teams/video.md" },
-            { "title": "File Sharing", "path": "microsoft-system-design/01-microsoft-teams/files.md" },
-            { "title": "Databases", "path": "microsoft-system-design/01-microsoft-teams/databases.md" },
-            { "title": "Technologies", "path": "microsoft-system-design/01-microsoft-teams/technologies.md" },
-            { "title": "Interview Tips", "path": "microsoft-system-design/01-microsoft-teams/interview-tips.md" }
+            {
+              "title": "Chat & Messaging",
+              "path": "microsoft-system-design/01-microsoft-teams/chat.md"
+            },
+            {
+              "title": "Presence & Status",
+              "path": "microsoft-system-design/01-microsoft-teams/presence.md"
+            },
+            {
+              "title": "Push Notifications",
+              "path": "microsoft-system-design/01-microsoft-teams/notifications.md"
+            },
+            {
+              "title": "Video & Calls",
+              "path": "microsoft-system-design/01-microsoft-teams/video.md"
+            },
+            {
+              "title": "File Sharing",
+              "path": "microsoft-system-design/01-microsoft-teams/files.md"
+            },
+            {
+              "title": "Databases",
+              "path": "microsoft-system-design/01-microsoft-teams/databases.md"
+            },
+            {
+              "title": "Technologies",
+              "path": "microsoft-system-design/01-microsoft-teams/technologies.md"
+            },
+            {
+              "title": "Interview Tips",
+              "path": "microsoft-system-design/01-microsoft-teams/interview-tips.md"
+            }
           ]
         },
-        { "title": "02. Scalable Azure Service", "path": "microsoft-system-design/02-scalable-azure-service.md" },
-        { "title": "03. Multi-Tenant Cloud", "path": "microsoft-system-design/03-architect-a-multi-tenant-cloud-solution.md" },
-        { "title": "04. URL Shortener", "path": "microsoft-system-design/04-design-a-url-shortening-service.md" },
-        { "title": "05. Search Autocomplete", "path": "microsoft-system-design/05-design-search-autocomplete-typeahead.md" },
-        { "title": "06. Uber/Lyft", "path": "microsoft-system-design/06-design-uber-lyft-ride-sharing-platform.md" },
-        { "title": "07. CDN", "path": "microsoft-system-design/07-design-a-content-delivery-network.md" },
-        { "title": "08. WhatsApp/Slack", "path": "microsoft-system-design/08-design-whatsapp-slack-chat-messaging.md" },
-        { "title": "09. Web Crawler", "path": "microsoft-system-design/09-design-a-scalable-web-crawler.md" },
-        { "title": "10. Collaborative Docs", "path": "microsoft-system-design/10-design-collaborative-document-editing.md" },
-        { "title": "11. Notification Service", "path": "microsoft-system-design/11-design-a-notification-service.md" },
-        { "title": "12. Distributed File Storage", "path": "microsoft-system-design/12-design-distributed-file-storage.md" },
-        { "title": "13. Cost Optimization", "path": "microsoft-system-design/13-optimize-cost-while-maintaining-performance.md" },
-        { "title": "14. High Availability", "path": "microsoft-system-design/14-design-high-availability-across-regions.md" },
-        { "title": "15. Meeting Scheduler", "path": "microsoft-system-design/15-design-meeting-scheduling-system.md" },
-        { "title": "16. Rate Limiter", "path": "microsoft-system-design/16-design-a-rate-limiter.md" },
-        { "title": "17. Sharding & Partitioning", "path": "microsoft-system-design/17-implement-sharding-and-partitioning.md" },
-        { "title": "18. Video Streaming", "path": "microsoft-system-design/18-design-video-streaming-platform.md" },
-        { "title": "19. Message Ordering", "path": "microsoft-system-design/19-ensure-message-ordering-in-chat.md" },
-        { "title": "20. GDPR/HIPAA Security", "path": "microsoft-system-design/20-secure-sensitive-data-gdpr-hipaa.md" },
-        { "title": "21. Location Tracking", "path": "microsoft-system-design/21-design-real-time-location-tracking.md" },
-        { "title": "22. Logging & Monitoring", "path": "microsoft-system-design/22-design-logging-monitoring.md" },
-        { "title": "23. Load Balancer", "path": "microsoft-system-design/23-design-a-load-balancer.md" },
-        { "title": "24. Eventual Consistency", "path": "microsoft-system-design/24-handle-eventual-consistency.md" },
-        { "title": "25. Log Processing", "path": "microsoft-system-design/25-design-real-time-log-processing.md" },
-        { "title": "26. CAP Theorem", "path": "microsoft-system-design/26-handle-cap-theorem-trade-offs.md" },
-        { "title": "27. Microservices vs Monolith", "path": "microsoft-system-design/27-microservices-vs-monolith.md" },
-        { "title": "28. Schema Evolution", "path": "microsoft-system-design/28-database-schema-evolution.md" },
-        { "title": "29. Recommendation Engine", "path": "microsoft-system-design/29-design-a-recommendation-engine.md" },
-        { "title": "30. Trade-off Discussions", "path": "microsoft-system-design/30-trade-off-discussions.md" }
+        {
+          "title": "02. Scalable Azure Service",
+          "path": "microsoft-system-design/02-scalable-azure-service.md"
+        },
+        {
+          "title": "03. Multi-Tenant Cloud",
+          "path": "microsoft-system-design/03-architect-a-multi-tenant-cloud-solution.md"
+        },
+        {
+          "title": "04. URL Shortener",
+          "path": "microsoft-system-design/04-design-a-url-shortening-service.md"
+        },
+        {
+          "title": "05. Search Autocomplete",
+          "path": "microsoft-system-design/05-design-search-autocomplete-typeahead.md"
+        },
+        {
+          "title": "06. Uber/Lyft",
+          "path": "microsoft-system-design/06-design-uber-lyft-ride-sharing-platform.md"
+        },
+        {
+          "title": "07. CDN",
+          "path": "microsoft-system-design/07-design-a-content-delivery-network.md"
+        },
+        {
+          "title": "08. WhatsApp/Slack",
+          "path": "microsoft-system-design/08-design-whatsapp-slack-chat-messaging.md"
+        },
+        {
+          "title": "09. Web Crawler",
+          "path": "microsoft-system-design/09-design-a-scalable-web-crawler.md"
+        },
+        {
+          "title": "10. Collaborative Docs",
+          "path": "microsoft-system-design/10-design-collaborative-document-editing.md"
+        },
+        {
+          "title": "11. Notification Service",
+          "path": "microsoft-system-design/11-design-a-notification-service.md"
+        },
+        {
+          "title": "12. Distributed File Storage",
+          "path": "microsoft-system-design/12-design-distributed-file-storage.md"
+        },
+        {
+          "title": "13. Cost Optimization",
+          "path": "microsoft-system-design/13-optimize-cost-while-maintaining-performance.md"
+        },
+        {
+          "title": "14. High Availability",
+          "path": "microsoft-system-design/14-design-high-availability-across-regions.md"
+        },
+        {
+          "title": "15. Meeting Scheduler",
+          "path": "microsoft-system-design/15-design-meeting-scheduling-system.md"
+        },
+        {
+          "title": "16. Rate Limiter",
+          "path": "microsoft-system-design/16-design-a-rate-limiter.md"
+        },
+        {
+          "title": "17. Sharding & Partitioning",
+          "path": "microsoft-system-design/17-implement-sharding-and-partitioning.md"
+        },
+        {
+          "title": "18. Video Streaming",
+          "path": "microsoft-system-design/18-design-video-streaming-platform.md"
+        },
+        {
+          "title": "19. Message Ordering",
+          "path": "microsoft-system-design/19-ensure-message-ordering-in-chat.md"
+        },
+        {
+          "title": "20. GDPR/HIPAA Security",
+          "path": "microsoft-system-design/20-secure-sensitive-data-gdpr-hipaa.md"
+        },
+        {
+          "title": "21. Location Tracking",
+          "path": "microsoft-system-design/21-design-real-time-location-tracking.md"
+        },
+        {
+          "title": "22. Logging & Monitoring",
+          "path": "microsoft-system-design/22-design-logging-monitoring.md"
+        },
+        {
+          "title": "23. Load Balancer",
+          "path": "microsoft-system-design/23-design-a-load-balancer.md"
+        },
+        {
+          "title": "24. Eventual Consistency",
+          "path": "microsoft-system-design/24-handle-eventual-consistency.md"
+        },
+        {
+          "title": "25. Log Processing",
+          "path": "microsoft-system-design/25-design-real-time-log-processing.md"
+        },
+        {
+          "title": "26. CAP Theorem",
+          "path": "microsoft-system-design/26-handle-cap-theorem-trade-offs.md"
+        },
+        {
+          "title": "27. Microservices vs Monolith",
+          "path": "microsoft-system-design/27-microservices-vs-monolith.md"
+        },
+        {
+          "title": "28. Schema Evolution",
+          "path": "microsoft-system-design/28-database-schema-evolution.md"
+        },
+        {
+          "title": "29. Recommendation Engine",
+          "path": "microsoft-system-design/29-design-a-recommendation-engine.md"
+        },
+        {
+          "title": "30. Trade-off Discussions",
+          "path": "microsoft-system-design/30-trade-off-discussions.md"
+        }
       ]
     },
     {
       "title": "System Design - Microsoft Products",
+      "icon": "Ⓜ️",
+      "description": "Microsoft-specific designs — Teams, Xbox, LinkedIn, Azure Key Vault, GitHub Copilot",
       "items": [
-        { "title": "31. Teams Video", "path": "microsoft-system-design/31-design-teams-video-conferencing.md" },
-        { "title": "32. Xbox Leaderboard", "path": "microsoft-system-design/32-design-xbox-live-leaderboard.md" },
-        { "title": "33. Xbox Matchmaking", "path": "microsoft-system-design/33-design-xbox-matchmaking.md" },
-        { "title": "34. LinkedIn Feed", "path": "microsoft-system-design/34-design-linkedin-news-feed.md" },
-        { "title": "35. LinkedIn PYMK", "path": "microsoft-system-design/35-design-linkedin-people-you-may-know.md" },
-        { "title": "36. Azure Key Vault", "path": "microsoft-system-design/36-design-azure-key-vault.md" },
-        { "title": "49. GitHub Copilot", "path": "microsoft-system-design/49-design-github-copilot.md" }
+        {
+          "title": "31. Teams Video",
+          "path": "microsoft-system-design/31-design-teams-video-conferencing.md"
+        },
+        {
+          "title": "32. Xbox Leaderboard",
+          "path": "microsoft-system-design/32-design-xbox-live-leaderboard.md"
+        },
+        {
+          "title": "33. Xbox Matchmaking",
+          "path": "microsoft-system-design/33-design-xbox-matchmaking.md"
+        },
+        {
+          "title": "34. LinkedIn Feed",
+          "path": "microsoft-system-design/34-design-linkedin-news-feed.md"
+        },
+        {
+          "title": "35. LinkedIn PYMK",
+          "path": "microsoft-system-design/35-design-linkedin-people-you-may-know.md"
+        },
+        {
+          "title": "36. Azure Key Vault",
+          "path": "microsoft-system-design/36-design-azure-key-vault.md"
+        },
+        {
+          "title": "49. GitHub Copilot",
+          "path": "microsoft-system-design/49-design-github-copilot.md"
+        }
       ]
     },
     {
       "title": "System Design - Infrastructure",
+      "icon": "⚙️",
+      "description": "Distributed infrastructure — ID generators, caches, job schedulers, K/V stores, locking",
       "items": [
-        { "title": "37. Distributed ID Generator", "path": "microsoft-system-design/37-design-distributed-id-generator.md" },
-        { "title": "38. Distributed Cache", "path": "microsoft-system-design/38-design-distributed-cache.md" },
-        { "title": "39. Job Scheduler", "path": "microsoft-system-design/39-design-distributed-job-scheduler.md" },
-        { "title": "40. Key-Value Store", "path": "microsoft-system-design/40-design-key-value-store.md" },
-        { "title": "41. Distributed Locking", "path": "microsoft-system-design/41-design-distributed-locking-service.md" }
+        {
+          "title": "37. Distributed ID Generator",
+          "path": "microsoft-system-design/37-design-distributed-id-generator.md"
+        },
+        {
+          "title": "38. Distributed Cache",
+          "path": "microsoft-system-design/38-design-distributed-cache.md"
+        },
+        {
+          "title": "39. Job Scheduler",
+          "path": "microsoft-system-design/39-design-distributed-job-scheduler.md"
+        },
+        {
+          "title": "40. Key-Value Store",
+          "path": "microsoft-system-design/40-design-key-value-store.md"
+        },
+        {
+          "title": "41. Distributed Locking",
+          "path": "microsoft-system-design/41-design-distributed-locking-service.md"
+        }
       ]
     },
     {
       "title": "System Design - Applications",
+      "icon": "📱",
+      "description": "Application designs — ticket booking, analytics, ad bidding, e-commerce, payments",
       "items": [
-        { "title": "42. Ticket Booking", "path": "microsoft-system-design/42-design-ticket-booking-system.md" },
-        { "title": "43. Proximity Service", "path": "microsoft-system-design/43-design-proximity-service.md" },
-        { "title": "44. Web Analytics", "path": "microsoft-system-design/44-design-web-analytics-system.md" },
-        { "title": "45. Ad Bidding", "path": "microsoft-system-design/45-design-ad-bidding-system.md" },
-        { "title": "46. E-commerce", "path": "microsoft-system-design/46-design-e-commerce-platform.md" },
-        { "title": "47. Payment Gateway", "path": "microsoft-system-design/47-design-payment-gateway.md" }
+        {
+          "title": "42. Ticket Booking",
+          "path": "microsoft-system-design/42-design-ticket-booking-system.md"
+        },
+        {
+          "title": "43. Proximity Service",
+          "path": "microsoft-system-design/43-design-proximity-service.md"
+        },
+        {
+          "title": "44. Web Analytics",
+          "path": "microsoft-system-design/44-design-web-analytics-system.md"
+        },
+        {
+          "title": "45. Ad Bidding",
+          "path": "microsoft-system-design/45-design-ad-bidding-system.md"
+        },
+        {
+          "title": "46. E-commerce",
+          "path": "microsoft-system-design/46-design-e-commerce-platform.md"
+        },
+        {
+          "title": "47. Payment Gateway",
+          "path": "microsoft-system-design/47-design-payment-gateway.md"
+        }
       ]
     },
     {
       "title": "AI & Agents — 1-Week Intensive",
+      "icon": "🤖",
+      "description": "7-day AI agents course — LLM foundations, prompt engineering, RAG, multi-agent systems",
       "items": [
-        { "title": "Overview & Syllabus", "path": "ai-agents/README.md" },
-        { "title": "Day 1: LLM Foundations", "path": "ai-agents/01-llm-foundations.md" },
-        { "title": "Day 2: Prompt Engineering", "path": "ai-agents/02-prompt-engineering.md" },
-        { "title": "Day 3: Single Agent (ReAct)", "path": "ai-agents/03-single-agent-react.md" },
-        { "title": "Day 4: Planner/Executor", "path": "ai-agents/04-planner-executor.md" },
-        { "title": "Day 5: RAG + Vector Memory", "path": "ai-agents/05-rag-vector-memory.md" },
-        { "title": "Day 6: Multi-Agent", "path": "ai-agents/06-multi-agent-collaboration.md" },
-        { "title": "Day 7: Final Project", "path": "ai-agents/07-final-project-copilot.md" },
-        { "title": "Appendix: Real-World Agents", "path": "ai-agents/appendix-real-world-agents.md" }
+        {
+          "title": "Overview & Syllabus",
+          "path": "ai-agents/README.md"
+        },
+        {
+          "title": "Day 1: LLM Foundations",
+          "path": "ai-agents/01-llm-foundations.md"
+        },
+        {
+          "title": "Day 2: Prompt Engineering",
+          "path": "ai-agents/02-prompt-engineering.md"
+        },
+        {
+          "title": "Day 3: Single Agent (ReAct)",
+          "path": "ai-agents/03-single-agent-react.md"
+        },
+        {
+          "title": "Day 4: Planner/Executor",
+          "path": "ai-agents/04-planner-executor.md"
+        },
+        {
+          "title": "Day 5: RAG + Vector Memory",
+          "path": "ai-agents/05-rag-vector-memory.md"
+        },
+        {
+          "title": "Day 6: Multi-Agent",
+          "path": "ai-agents/06-multi-agent-collaboration.md"
+        },
+        {
+          "title": "Day 7: Final Project",
+          "path": "ai-agents/07-final-project-copilot.md"
+        },
+        {
+          "title": "Appendix: Real-World Agents",
+          "path": "ai-agents/appendix-real-world-agents.md"
+        }
+      ]
+    },
+    {
+      "title": "ML Engineering",
+      "icon": "🧠",
+      "description": "17-chapter ML guide for backend engineers — math, data, classical ML, deep learning, MLOps, Azure",
+      "items": [
+        {
+          "title": "01. Vectors & Matrices",
+          "path": "ml-engineering/01-vectors-and-matrices.md"
+        },
+        {
+          "title": "01b. Eigenvalues, Norms & Tensors",
+          "path": "ml-engineering/01b-eigenvalues-norms-tensors.md"
+        },
+        {
+          "title": "02. Calculus & Optimization",
+          "path": "ml-engineering/02-calculus-and-optimization.md"
+        },
+        {
+          "title": "03. Probability & Statistics",
+          "path": "ml-engineering/03-probability-and-statistics.md"
+        },
+        {
+          "title": "04. Data Preprocessing",
+          "path": "ml-engineering/04-data-preprocessing.md"
+        },
+        {
+          "title": "05. Feature Engineering",
+          "path": "ml-engineering/05-feature-engineering.md"
+        },
+        {
+          "title": "06. Linear & Logistic Regression",
+          "path": "ml-engineering/06-linear-and-logistic-regression.md"
+        },
+        {
+          "title": "07. Trees & Ensembles",
+          "path": "ml-engineering/07-trees-and-ensembles.md"
+        },
+        {
+          "title": "08. Gradient Boosting",
+          "path": "ml-engineering/08-gradient-boosting.md"
+        },
+        {
+          "title": "09. Clustering & Unsupervised",
+          "path": "ml-engineering/09-clustering-and-unsupervised.md"
+        },
+        {
+          "title": "10. Neural Networks",
+          "path": "ml-engineering/10-neural-networks.md"
+        },
+        {
+          "title": "11. Embeddings",
+          "path": "ml-engineering/11-embeddings.md"
+        },
+        {
+          "title": "12. Transformers & Attention",
+          "path": "ml-engineering/12-transformers-and-attention.md"
+        },
+        {
+          "title": "13. Evaluation & Metrics",
+          "path": "ml-engineering/13-evaluation-and-metrics.md"
+        },
+        {
+          "title": "14. Inference & Serving",
+          "path": "ml-engineering/14-inference-and-serving.md"
+        },
+        {
+          "title": "15. Vector Databases",
+          "path": "ml-engineering/15-vector-databases.md"
+        },
+        {
+          "title": "16. ML Frameworks",
+          "path": "ml-engineering/16-ml-frameworks.md"
+        },
+        {
+          "title": "17. Azure ML Solutions",
+          "path": "ml-engineering/17-azure-ml-solutions.md"
+        }
       ]
     }
   ]

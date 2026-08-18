@@ -6,6 +6,21 @@
 
 ---
 
+## Table of Contents
+
+1. [The ML Framework Landscape](#1-the-ml-framework-landscape)
+2. [scikit-learn — The Swiss Army Knife](#2-scikit-learn--the-swiss-army-knife)
+3. [PyTorch — The Deep Learning Standard](#3-pytorch--the-deep-learning-standard)
+4. [TensorFlow / Keras — The Production Workhorse](#4-tensorflow--keras--the-production-workhorse)
+5. [Hugging Face — The npm of ML](#5-hugging-face--the-npm-of-ml)
+6. [XGBoost / LightGBM / CatBoost (Recap)](#6-xgboost--lightgbm--catboost-recap)
+7. [MLflow — Experiment Tracking & Registry](#7-mlflow--experiment-tracking--registry)
+8. [Comparison Matrix](#8-comparison-matrix)
+9. [Decision Guide — What to Use When](#9-decision-guide--what-to-use-when)
+10. [The Modern ML Stack](#10-the-modern-ml-stack)
+
+---
+
 ## 1. The ML Framework Landscape
 
 ### Intuition (Backend Analogy)

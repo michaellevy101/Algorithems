@@ -1,0 +1,95 @@
+graph LR
+    %% Define Styles with High Contrast
+    classDef setA fill:#BBDEFB,stroke:#1565C0,stroke-width:3px,font-size:20px,color:black;
+    classDef setB fill:#C8E6C9,stroke:#2E7D32,stroke-width:3px,font-size:20px,color:black;
+    classDef setC fill:#FFE0B2,stroke:#EF6C00,stroke-width:3px,font-size:20px,color:black;
+    classDef root stroke-width:5px,font-weight:bold,font-size:22px;
+    classDef processLabel fill:#FFFFFF,stroke:#333,stroke-width:2px,stroke-dasharray:5 5,font-size:16px,color:#333;
+    classDef invisible fill:none,stroke:none,width:0px,height:0px;
+
+    %% ---------------------------------------------------------
+    %% STEP 1
+    %% ---------------------------------------------------------
+    subgraph Step1 ["Step 1: Initial State (5 Disjoint Sets)"]
+        direction TB
+        %% Spacer to push nodes down from title
+        Spacer1[ ]:::invisible
+        
+        %% Nodes with Rank (Square for readability)
+        S1_0["0<br/>r:0"]:::setA
+        S1_1["1<br/>r:0"]:::setA
+        S1_2["2<br/>r:0"]:::setB
+        S1_3["3<br/>r:0"]:::setB
+        S1_4["4<br/>r:0"]:::setC
+        
+        class S1_0,S1_1,S1_2,S1_3,S1_4 root
+        
+        %% Layout
+        Spacer1 ~~~ S1_0
+    end
+
+    %% Operation Labels (Split for clarity)
+    Op1a["➕ Union(1,0)"]:::processLabel
+    Op1b["➕ Union(3,2)"]:::processLabel
+
+    %% ---------------------------------------------------------
+    %% STEP 2
+    %% ---------------------------------------------------------
+    subgraph Step2 ["Step 2: Two pairs merged"]
+        direction TB
+        %% Spacer to push nodes down from title
+        Spacer2[ ]:::invisible
+        
+        %% Set A (0+1): Union(1,0) -> 0 becomes parent
+        S2_1["1"]:::setA --> S2_0["0<br/>r:1"]:::setA
+        class S2_0 root
+
+        %% Set B (2+3): Union(3,2) -> 2 becomes parent
+        S2_3["3"]:::setB --> S2_2["2<br/>r:1"]:::setB
+        class S2_2 root
+
+        %% Set C (4): Unchanged
+        S2_4["4<br/>r:0"]:::setC
+        class S2_4 root
+        
+        %% Layout
+        Spacer2 ~~~ S2_1
+    end
+
+    %% Operation Label 2
+    Op2["➕ Union(2,0)"]:::processLabel
+
+    %% ---------------------------------------------------------
+    %% STEP 3
+    %% ---------------------------------------------------------
+    subgraph Step3 ["Step 3: Merge roots (Union by Rank)"]
+        direction TB
+        %% Spacer to push nodes down from title
+        Spacer3[ ]:::invisible
+
+        %% Union(2,0): Roots are 0(rank1) and 2(rank1). 
+        %% Tie-break: 0 becomes parent of 2. Rank(0) becomes 2.
+        
+        S3_1["1"]:::setA --> S3_0["0<br/>r:2"]:::setA
+        S3_3["3"]:::setA --> S3_2["2"]:::setA
+        S3_2 --> S3_0
+        
+        class S3_0 root
+        class S3_2 setA
+        
+        S3_4["4<br/>r:0"]:::setC
+        class S3_4 root
+
+        %% Layout
+        Spacer3 ~~~ S3_0
+    end
+
+    %% Clear Flow Arrows
+    Step1 -.-> Op1a
+    Step1 -.-> Op1b
+    Op1a -.-> Step2
+    Op1b -.-> Step2
+    Step2 -.-> Op2
+    Op2 -.-> Step3
+
+    linkStyle default stroke:#555,stroke-width:2px;

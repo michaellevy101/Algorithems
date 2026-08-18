@@ -64,6 +64,9 @@ Thumbs.db
 build/
 out/
 bin/
+node_modules/
+__pycache__/
+*.pyc
 
 # Test output
 test-output/
